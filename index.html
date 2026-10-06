@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Der Einfluss-Test – Thomas „Döm“ Löwen</title>
+<meta name="description" content="Wie viel von dem, was dich beschäftigt, kannst du tatsächlich bewegen? Ein kurzer Test von Thomas „Döm“ Löwen.">
+<meta property="og:title" content="Der Einfluss-Test">
+<meta property="og:description" content="Entdecke den Unterschied zwischen dem, was dich interessiert, und dem, was du bewirken kannst.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#131E3D">
+<style>
+@font-face{font-family:"Young Serif";src:url("fonts/young-serif-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-700-normal.woff2") format("woff2");font-weight:700;font-display:swap}
+:root{
+  --bg:#131E3D; --plate:#1B2950; --plate-2:#22325E; --rim:#F5B21B; --ink:#EEF2FA; --muted:#A8B4CE;
+  --white:#F8FAFD; --white-edge:#C9D3E3; --yolk:#F5B21B; --yolk-deep:#D98C0A;
+  --line:#2D3D6A; --focus:#F5B21B; --ok:#7FD3A8; --on-yolk:#131E3D;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Young Serif",Georgia,"Times New Roman",serif;font-weight:400;line-height:1.15;margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px}
+.screen[hidden],[hidden]{display:none!important}
+.muted{color:var(--muted)}
+
+.btn{display:inline-block;border:0;border-radius:999px;padding:14px 30px;background:var(--rim);color:var(--on-yolk);font-weight:600;font-size:1.02rem}
+.btn:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid #3C4E80;padding:12px 24px}
+.linkbtn{background:none;border:0;padding:0;text-decoration:underline;color:var(--ink)}
+
+/* Start */
+.hero{text-align:center;padding-top:12px}
+.hero svg{width:min(300px,78vw);height:auto;display:block;margin:0 auto 8px}
+.hero h1{font-size:clamp(2.1rem,6vw,3.2rem);margin-bottom:14px}
+.hero p{max-width:52ch;margin:0 auto 12px;color:var(--muted)}
+.hero p.tagline{color:var(--ink);font-size:1.1rem}
+.keys{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin:24px 0 8px;text-align:left}
+.keys div{display:flex;gap:10px;align-items:center}
+.keys i{flex:none;width:22px;height:22px;border-radius:50%}
+.keys .kw{background:var(--white);border:2px solid var(--white-edge)}
+.keys .ky{background:var(--yolk);border:2px solid var(--yolk-deep)}
+.keys span{line-height:1.3}
+.keys small{display:block;color:var(--muted)}
+.facts{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin:18px 0 30px;color:var(--muted);font-size:.95rem}
+.facts strong{color:var(--ink);font-weight:600}
+.resume{margin-top:14px;font-size:.95rem;color:var(--muted)}
+
+/* Shared quiz chrome */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+.back{background:none;border:0;color:var(--muted);padding:6px 0;font-weight:500}
+.back:disabled{visibility:hidden}
+.count{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.95rem}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:32px}
+.progress i{display:block;height:100%;width:0;background:var(--yolk);border-radius:6px;transition:width .3s ease}
+.phase-title{font-size:clamp(1.6rem,4.5vw,2.1rem);margin-bottom:10px}
+.phase-intro{color:var(--muted);margin:0 0 20px;max-width:60ch}
+.timeframe{display:inline-block;background:var(--plate);border-radius:999px;padding:4px 14px;font-size:.92rem;margin-bottom:22px}
+
+/* Phase 1 */
+.scale-key{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;background:var(--plate);border-radius:16px;padding:16px 18px;margin:0 0 26px;font-size:.93rem}
+.scale-key b{font-weight:600;white-space:nowrap}
+.scale-key span{color:var(--muted)}
+.areas{list-style:none;margin:0 0 20px;padding:0}
+.area{padding:16px 0;border-bottom:1px solid var(--line)}
+.area:first-child{border-top:1px solid var(--line)}
+.area-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.area-name{font-weight:600}
+.area-remove{background:none;border:0;color:var(--muted);font-size:.88rem;text-decoration:underline;padding:0}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.seg button{
+  border:1.5px solid var(--line);background:var(--plate);border-radius:12px;
+  padding:8px 2px;line-height:1.15;font-size:.82rem;color:var(--muted);
+}
+.seg button b{display:block;font-size:1.05rem;color:var(--ink);font-weight:600;margin-bottom:2px}
+.seg button:hover{border-color:var(--rim)}
+.seg button[aria-checked="true"]{background:var(--yolk);border-color:var(--yolk-deep);color:#131E3D}
+.seg button[aria-checked="true"] b{color:#131E3D}
+.add-area{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 30px}
+.add-area input{flex:1 1 220px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--plate)}
+.phase-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* Interlude */
+
+/* Phase 2 */
+.area-label{font-weight:600;color:var(--muted);margin:0 0 6px}
+.question{font-family:"Young Serif",Georgia,serif;font-size:clamp(1.3rem,3.4vw,1.65rem);line-height:1.35;min-height:3em;margin:0 0 22px;max-width:36ch}
+.scale{display:grid;gap:10px}
+.opt{display:flex;align-items:flex-start;gap:14px;text-align:left;width:100%;background:var(--plate);border:1.5px solid var(--line);border-radius:14px;padding:13px 16px}
+.opt:hover{border-color:var(--rim)}
+.opt .dot{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--white-edge);background:var(--white);display:grid;place-items:center;margin-top:1px}
+.opt[aria-checked="true"]{border-color:var(--yolk-deep)}
+.opt[aria-checked="true"] .dot::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--yolk)}
+.opt .txt{flex:1;line-height:1.35}
+.opt .txt b{font-weight:600;display:block}
+.opt .txt span{color:var(--muted);font-size:.92rem}
+.opt kbd{font:inherit;font-size:.8rem;color:var(--muted);margin-top:2px}
+.hint{margin-top:22px;color:var(--muted);font-size:.88rem;text-align:center}
+@media (hover:none){.opt kbd,.hint{display:none}}
+
+/* Results */
+.result-head{text-align:center}
+.result-head h1{font-size:clamp(2rem,5.5vw,2.8rem);margin-bottom:6px}
+.result-head p{color:var(--muted);margin:0}
+.egg-stage{display:grid;place-items:center;margin:14px 0 4px}
+.switch-row{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 10px;font-size:.95rem;color:var(--muted)}
+.switch-row .on-lbl{color:var(--ink);font-weight:600}
+.switch{position:relative;width:52px;height:30px;border-radius:999px;border:0;background:var(--line);padding:0;transition:background .2s}
+.switch span{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--yolk)}
+.switch[aria-checked="true"] span{transform:translateX(22px)}
+.egg-stage svg{width:min(400px,92vw);height:auto;overflow:visible}
+.egg-stage svg g.anim{transform-box:fill-box;transform-origin:center}
+.wedge{cursor:pointer;transition:opacity .2s}
+.dim .wedge{opacity:.3}
+.dim .wedge.on{opacity:1}
+.egg-toggle{display:flex;justify-content:center;gap:6px;margin:4px 0 10px}
+.egg-toggle button{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:7px 16px;font-size:.92rem}
+.egg-toggle button[aria-pressed="true"]{background:var(--rim);border-color:var(--rim);color:var(--plate)}
+.egg-info{text-align:center;min-height:3.2em;color:var(--muted);font-size:.95rem;margin:0 auto 6px;max-width:44ch}
+.egg-info b{color:var(--ink)}
+.egg-keys{margin:0 0 22px}
+.lead{font-family:"Young Serif",Georgia,serif;font-size:clamp(1.2rem,3.3vw,1.5rem);text-align:center;max-width:32ch;margin:0 auto 14px;line-height:1.35}
+.lead-sub{text-align:center;color:var(--muted);max-width:52ch;margin:0 auto 28px;font-size:.95rem}
+.compare{background:var(--plate);border-radius:16px;padding:14px 18px;margin:0 0 30px;font-size:.95rem}
+.compare b{font-weight:600}
+.up{color:var(--ok);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--line);border-bottom:1.5px solid var(--line);margin-bottom:40px}
+.stat{padding:18px 10px;text-align:center}
+.stat+.stat{border-left:1.5px solid var(--line)}
+.stat b{display:block;font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:1.9rem;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.9rem;line-height:1.3;display:block}
+@media (max-width:520px){.stats{grid-template-columns:1fr}.stat+.stat{border-left:0;border-top:1.5px solid var(--line)}}
+.highlights{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:44px}
+@media (max-width:560px){.highlights{grid-template-columns:1fr}}
+.hl{background:var(--plate);border-radius:18px;padding:20px}
+.hl h3{font-size:1.25rem;margin:4px 0 6px;overflow-wrap:anywhere}
+.hl small{color:var(--muted);font-size:.9rem}
+.hl p{margin:0;color:var(--muted);font-size:.95rem}
+section{margin-bottom:44px}
+section h2{font-size:1.6rem;margin-bottom:8px}
+section > p.sub{color:var(--muted);margin:0 0 20px;max-width:60ch}
+.fields{list-style:none;margin:0;padding:0}
+.field{display:grid;grid-template-columns:1fr auto;gap:4px 14px;padding:14px 8px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:8px}
+.field:first-child{border-top:1px solid var(--line)}
+.field:hover,.field.on{background:var(--plate)}
+.field .name{font-weight:600;overflow-wrap:anywhere}
+.tag{font-size:.82rem;padding:3px 10px;border-radius:999px;white-space:nowrap;align-self:start;font-weight:500}
+.tag.core{background:var(--yolk);color:#131E3D}
+.tag.outside{background:var(--white);border:1.5px solid var(--white-edge);color:#131E3D}
+.tag.foreign{background:#7F95D1;color:#131E3D}
+.tag.edge{background:var(--line);color:var(--ink)}
+.bars{grid-column:1 / -1;display:grid;grid-template-columns:5.6em 1fr 1.6em;gap:4px 10px;align-items:center;font-size:.85rem;color:var(--muted)}
+.bar{height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:8px}
+.bar.i i{background:var(--white-edge)}
+.bar.w i{background:var(--yolk)}
+.bars output{font-variant-numeric:tabular-nums;text-align:right;color:var(--ink)}
+.skipped{color:var(--muted);font-size:.92rem;margin:14px 0 0}
+.impulses{display:grid;gap:14px}
+.impulse{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start}
+.impulse p{margin:0}
+.impulse .areas-in{color:var(--muted);font-size:.92rem;grid-column:2}
+.reflect label{display:block;font-weight:600;margin:18px 0 8px}
+.reflect textarea{width:100%;min-height:90px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--plate);resize:vertical;line-height:1.45}
+.reflect small{display:block;color:var(--muted);margin-top:10px;font-size:.88rem}
+.group-box{background:var(--plate);border-radius:18px;padding:20px}
+.group-box p{margin:0 0 12px}
+.group-box .btn{margin-top:4px}
+.status{font-size:.92rem;margin-top:10px;color:var(--muted)}
+.question-big{font-family:"Young Serif",Georgia,serif;font-size:clamp(1.2rem,3.2vw,1.45rem);line-height:1.4;text-align:center;max-width:34ch;margin:0 auto 36px}
+.note{font-size:.92rem;color:var(--muted);border-left:3px solid var(--yolk);padding:4px 0 4px 14px;margin:0 0 36px;max-width:62ch}
+.actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* Group screen */
+.gtable{width:100%;border-collapse:collapse;font-size:.95rem}
+.gtable-wrap{overflow-x:auto}
+.gtable th,.gtable td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+.gtable th{font-weight:600;color:var(--muted);font-size:.85rem}
+.gtable td.num{font-variant-numeric:tabular-nums;text-align:right}
+.gtable th.num{text-align:right}
+
+/* Reduced UI */
+.small{font-size:.9rem;color:var(--muted);margin-top:12px}
+.scale-head{position:sticky;top:0;z-index:2;background:var(--bg);display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:10px 0 8px;font-size:.8rem;color:var(--muted);text-align:center;line-height:1.2;border-bottom:1px solid var(--line)}
+.seg button{padding:10px 2px}
+details.levels{margin:0 0 18px;font-size:.93rem}
+details.levels summary,details.more>summary{cursor:pointer;color:var(--ink);text-decoration:underline;list-style:none;display:inline-block}
+details.levels summary::-webkit-details-marker,details.more>summary::-webkit-details-marker{display:none}
+details.levels .scale-key{margin:12px 0 0}
+.p2-note{color:var(--muted);font-size:.92rem;margin:0 0 18px}
+.legend-inline{display:flex;justify-content:center;gap:22px;margin:0 0 14px;font-size:.92rem;color:var(--muted)}
+.legend-inline span{display:flex;align-items:center;gap:8px}
+.legend-inline i{width:14px;height:14px;border-radius:50%;display:inline-block}
+.legend-inline .kw{background:var(--white);border:2px solid var(--white-edge)}
+.legend-inline .ky{background:var(--yolk);border:2px solid var(--yolk-deep)}
+details.more{margin:0 0 36px;border-top:1.5px solid var(--line);padding-top:18px}
+details.more>summary{font-weight:600;text-decoration:none;font-size:1.05rem;padding:4px 0}
+details.more>summary::after{content:" +";color:var(--muted)}
+details.more[open]>summary::after{content:" −"}
+.more-intro{color:var(--muted);margin:16px 0 18px;max-width:60ch;font-size:.95rem}
+.field .imp{grid-column:1 / -1;color:var(--muted);font-size:.88rem;margin:4px 0 0;line-height:1.4}
+.reflect{margin-bottom:36px}
+.reflect label{margin-top:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.pop{animation:pop .9s cubic-bezier(.2,.9,.25,1.15) both}
+.pop-y{animation:pop .9s .35s cubic-bezier(.2,.9,.25,1.25) both}
+@keyframes pop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+@media print{.actions,.back,.egg-toggle,.reflect,.group-box,.owner-link{display:none!important} body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* Hero-Ei */
+.hero-egg{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero-egg g{transform-box:fill-box;transform-origin:center}
+.hero-egg .egg-white{animation:breathe 11s ease-in-out infinite}
+.hero-egg .egg-yolk{animation:wobble 9s ease-in-out infinite}
+.hero-egg.jiggle .egg-white{animation:jiggle-w .9s cubic-bezier(.3,1.6,.5,1)}
+.hero-egg.jiggle .egg-yolk{animation:jiggle-y .9s cubic-bezier(.3,1.6,.5,1)}
+@keyframes breathe{0%,100%{transform:scale(1,1) rotate(0)}30%{transform:scale(1.05,.955) rotate(-3.5deg)}65%{transform:scale(.965,1.045) rotate(2.5deg)}}
+@keyframes wobble{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(3px,-2px) scale(1.03,.97)}50%{transform:translate(-1px,2px) scale(.98,1.02)}75%{transform:translate(-3px,-1px) scale(1.02,.98)}}
+@keyframes jiggle-w{0%{transform:scale(1)}20%{transform:scale(1.08,.92)}45%{transform:scale(.95,1.05)}70%{transform:scale(1.02,.98)}100%{transform:scale(1)}}
+@keyframes jiggle-y{0%{transform:translate(0,0)}15%{transform:translate(0,-14px) scale(.94,1.08)}40%{transform:translate(0,4px) scale(1.1,.9)}65%{transform:translate(0,-3px) scale(.98,1.03)}100%{transform:translate(0,0)}}
+
+/* Brand */
+.ei{color:var(--yolk)}
+.brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
+.wordmark{font-family:"Young Serif",Georgia,serif;font-size:1.05rem;color:var(--ink);text-decoration:none;letter-spacing:.01em}
+.wordmark:hover{color:var(--yolk)}
+.brandbar a.site{color:var(--muted);font-size:.9rem;text-decoration:none}
+.brandbar a.site:hover{color:var(--ink)}
+.byline{color:var(--muted);font-size:.98rem;margin:-4px 0 18px}
+.byline a{color:var(--ink);text-decoration-color:var(--yolk);text-underline-offset:3px}
+.site-foot{border-top:1px solid var(--line);margin-top:56px;padding-top:22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;font-size:.88rem;color:var(--muted)}
+.site-foot nav{display:flex;gap:20px;flex-wrap:wrap}
+.site-foot a{color:var(--muted);text-decoration:none}
+.site-foot a:hover{color:var(--ink);text-decoration:underline}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="brandbar">
+    <a class="wordmark" href="https://thomasloewen.de" target="_blank" rel="noopener">Thomas „Döm“ Löwen</a>
+    <a class="site" href="https://thomasloewen.de" target="_blank" rel="noopener">thomasloewen.de</a>
+  </header>
+
+  <!-- Start -->
+  <div class="screen" id="start">
+    <div class="hero">
+      <svg viewBox="0 0 360 300" aria-hidden="true" class="hero-egg" id="heroEgg">
+        <g class="egg-white"><path id="heroWhite" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"></path></g>
+        <g class="egg-yolk">
+          <circle cx="172" cy="146" r="56" fill="var(--yolk)"></circle>
+          <circle cx="155" cy="128" r="13" fill="#fff" opacity=".45"></circle>
+        </g>
+      </svg>
+      <h1>Der <span class="ei">Ei</span>nfluss-Test</h1>
+      <p class="byline">von <a href="https://thomasloewen.de" target="_blank" rel="noopener">Thomas „Döm“ Löwen</a></p>
+      <p class="tagline">Entdecke den Unterschied zwischen dem, was dich interessiert, und dem, was du bewirken kannst.</p>
+      <button class="btn" id="startBtn" style="margin-top:14px">Test starten</button>
+      <p class="small">Dauert etwa 3 Minuten.</p>
+      <div class="resume" id="resume" hidden>
+        <span id="resumeTxt">Du hast schon angefangen.</span> <button class="linkbtn" id="resumeBtn">Weitermachen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 1: Interesse -->
+  <div class="screen" id="phase1" hidden>
+    <div class="topbar">
+      <button class="back" id="p1Back">Zurück</button>
+      <span class="count">Schritt 1 von 2</span>
+    </div>
+    <h2 class="phase-title">Wie viel Raum nimmt jeder Bereich in deinem Leben ein?</h2>
+    <p class="phase-intro">Zeit, Aufmerksamkeit, Engagement – bezogen auf die letzten 12 Monate.</p>
+    <details class="levels"><summary>Was bedeuten die Stufen?</summary><div class="scale-key" id="scaleKey"></div></details>
+    <div class="scale-head" aria-hidden="true"><span>kaum</span><span>wenig</span><span>mittel</span><span>stark</span><span>sehr stark</span></div>
+    <ul class="areas" id="areaList"></ul>
+    <p id="addLinkWrap" style="margin:0 0 26px"><button class="linkbtn" id="addLink">Eigenen Bereich hinzufügen</button></p>
+    <div class="add-area" id="addArea" hidden>
+      <input id="addInput" type="text" maxlength="40" placeholder="z. B. Fotografie" aria-label="Eigenen Bereich hinzufügen" autocomplete="off">
+      <button class="btn btn-ghost" id="addBtn">Hinzufügen</button>
+    </div>
+    <div class="phase-foot">
+      <span class="muted" id="p1Status"></span>
+      <button class="btn" id="p1Next" disabled>Weiter</button>
+    </div>
+  </div>
+
+  <!-- Phase 2: Einfluss -->
+  <div class="screen" id="phase2" hidden>
+    <div class="topbar">
+      <button class="back" id="p2Back">Zurück</button>
+      <span class="count" id="p2Count"></span>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="p2Bar"></i></div>
+    <p class="area-label" id="p2Area"></p>
+    <p class="p2-note">Es zählt, wie stark du prägst, nicht wie viele Menschen es sind.</p>
+    <p class="question" id="p2Q" aria-live="polite"></p>
+    <div class="scale" role="radiogroup" aria-labelledby="p2Q" id="p2Scale"></div>
+    <p class="hint">Tipp: Du kannst auch mit den Tasten 1 bis 5 antworten.</p>
+  </div>
+
+  <!-- Result -->
+  <div class="screen" id="result" hidden>
+    <div class="result-head"><h1>Dein Spiegelei</h1></div>
+    <div class="egg-stage" id="eggStage"></div>
+    <div class="switch-row">
+      <span id="swLeft">Spiegelei</span>
+      <button class="switch" id="viewSwitch" role="switch" aria-checked="false" aria-label="Nach Bereichen aufschlüsseln"><span></span></button>
+      <span id="swRight">Bereiche</span>
+    </div>
+    <div class="legend-inline"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Wirkung</span></div>
+    <p class="egg-info" id="eggInfo" aria-live="polite"></p>
+    <p class="lead" id="lead"></p>
+    <p class="lead-sub" id="compare" hidden></p>
+
+    <div class="highlights">
+      <div class="hl"><small>Hier bewegst du am meisten</small><h3 id="hStrong"></h3><p id="hStrongT"></p></div>
+      <div class="hl"><small>Hier steckt ungenutztes Potenzial</small><h3 id="hGap"></h3><p id="hGapT"></p></div>
+    </div>
+
+    <div class="reflect">
+      <label for="r1">Welchen Bereich würdest du gern ins Gelbe holen? Was wäre ein erster kleiner Schritt?</label>
+      <textarea id="r1"></textarea>
+      <small>Bleibt nur in diesem Browser gespeichert.</small>
+    </div>
+
+    <details class="more" id="more">
+      <summary>Alle Bereiche ansehen</summary>
+      <p class="more-intro" id="moreIntro"></p>
+      <ul class="fields" id="fields"></ul>
+      <p class="skipped" id="skipped"></p>
+    </details>
+
+    <p class="note">Das ist kein objektives Ergebnis, sondern eine Momentaufnahme deiner eigenen Einschätzung. Mach den Test in ein paar Wochen noch einmal und beobachte deine Entwicklung.</p>
+
+
+    <div class="actions">
+      <button class="btn" id="shareBtn">Anonym mit der Gruppe teilen</button>
+      <button class="btn btn-ghost" id="dlBtn">Als Bild speichern</button>
+      <button class="btn btn-ghost" id="restartBtn">Neu starten</button>
+    </div>
+    <p class="status" id="dlStatus" style="text-align:center"></p>
+    <section id="groupSection" hidden style="margin:22px 0 0">
+      <div class="group-box">
+        <p>Gib die PIN ein, die die Gruppenleitung zeigt. Dein Ergebnis wird anonym übertragen, ohne Namen und ohne Notizen.</p>
+        <div class="add-area" style="margin:0">
+          <input id="pinInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="PIN" aria-label="Gruppen-PIN" autocomplete="off" style="flex:0 1 140px;font-size:1.3rem;letter-spacing:.3em;text-align:center">
+          <button class="btn" id="pinBtn">Anonym senden</button>
+        </div>
+        <p class="status" id="groupStatus"></p>
+      </div>
+    </section>
+  </div>
+
+
+  <footer class="site-foot">
+    <span>© <span class="year"></span> Thomas „Döm“ Löwen</span>
+    <nav aria-label="Rechtliches">
+      <a href="https://thomasloewen.de" target="_blank" rel="noopener">thomasloewen.de</a>
+      <a href="https://angebote.thomasloewen.de/legal/271582326/contact" target="_blank" rel="noopener">Impressum</a>
+      <a href="https://angebote.thomasloewen.de/legal/271582326/privacy" target="_blank" rel="noopener">Datenschutz</a>
+    </nav>
+  </footer>
+</main>
+
+<script>document.querySelectorAll(".year").forEach(e=>e.textContent=new Date().getFullYear());</script>
+<script>
+/* ---------- Content ---------- */
+const AREAS = [
+  {name:"Familie & Freundschaften", w:"Wie stark prägst du deine Familie, deine Freunde und dein persönliches Umfeld?"},
+  {name:"Beruf & Karriere", w:"Wie stark prägst du Kollegen, Mitarbeiter, Kunden oder andere Menschen in deinem beruflichen Umfeld?"},
+  {name:"Wirtschaft & Unternehmertum", w:"Wie stark prägst du wirtschaftliche Entscheidungen, Unternehmen oder unternehmerisch tätige Menschen?"},
+  {name:"Politik & Gesellschaft", w:"Wie stark prägst du politische oder gesellschaftliche Entscheidungen und Entwicklungen?"},
+  {name:"Sport & Freizeit", w:"Wie stark prägst du andere Menschen im Bereich Sport und Freizeit?"},
+  {name:"Kultur & Medien", w:"Wie stark prägst du andere Menschen im Bereich Musik, Film, Literatur, Kunst oder Medien?"},
+  {name:"Glaube & Kirche", w:"Wie stark prägst du andere Menschen in Fragen des Glaubens, der Spiritualität oder des Gemeindelebens?"},
+  {name:"Ehrenamt & Engagement", w:"Wie stark prägst du andere Menschen durch dein ehrenamtliches oder freiwilliges Engagement?"},
+  {name:"Vereine & lokale Gemeinschaft", w:"Wie stark prägst du das Geschehen in Vereinen, Clubs oder deiner lokalen Gemeinschaft?"},
+  {name:"Bildung & Wissen", w:"Wie stark prägst du andere Menschen durch dein Wissen, deine Bildung oder deine Fähigkeit, Dinge zu vermitteln?"},
+  {name:"Internet & Social Media", w:"Wie stark prägst du Menschen über digitale Medien und Online-Netzwerke?"}
+];
+const SCALE_I = [
+  ["kaum","Ich beschäftige mich praktisch nicht damit."],
+  ["wenig","Ich interessiere mich gelegentlich dafür."],
+  ["mittel","Es ist ein regelmäßiger Bestandteil meines Lebens."],
+  ["stark","Ich investiere regelmäßig viel Zeit, Energie oder Aufmerksamkeit darin."],
+  ["sehr stark","Dieser Bereich prägt einen wesentlichen Teil meines Lebens."]
+];
+const SCALE_W = [
+  ["kein Einfluss","Ich bin hier Beobachter oder Konsument."],
+  ["geringer Einfluss","Ich beeinflusse gelegentlich einzelne Menschen oder Entscheidungen."],
+  ["mittlerer Einfluss","Ich gestalte regelmäßig mit. Mein Wort hat Gewicht."],
+  ["großer Einfluss","Ich präge Menschen, Entscheidungen oder Entwicklungen in diesem Bereich deutlich."],
+  ["sehr großer Einfluss","Ich trage hier wesentliche Verantwortung. Vieles richtet sich nach mir."]
+];
+const TAGS = {
+  core:   {label:"Wirkungsbereich", text:"Der Bereich prägt dein Leben, und du bewegst dort viel.",
+           impulse:"Hier liegt deine Stärke. Investiere bewusst weiter und überlege, wen du mitnehmen oder befähigen kannst."},
+  outside:{label:"Interessensbereich", text:"Der Bereich beschäftigt dich stark, liegt aber außerhalb deines aktuellen Einflusses.",
+           impulse:"Gibt es hier eine kleine Rolle, in der du Verantwortung übernehmen könntest? Oder darf der Bereich einfach Freude bleiben, ohne dass du etwas bewegen musst?"},
+  foreign:{label:"Einfluss ohne Fokus", text:"Du prägst hier mehr, als du investierst.",
+           impulse:"Andere orientieren sich an dir, obwohl der Bereich für dich nicht zentral ist. Willst du diesen Einfluss bewusster gestalten oder an jemanden abgeben?"},
+  edge:   {label:"Randbereich", text:"Wenig Raum und wenig Einfluss.",
+           impulse:"Kein Handlungsbedarf, solange es sich für dich stimmig anfühlt."}
+};
+const KEY="wirkungsbereich-test-v3", HKEY="wirkungsbereich-history-v1", MAX_CUSTOM=3;
+
+/* ---------- State ---------- */
+const fresh=()=>({screen:"phase1",custom:[],interest:{},influence:{},pos:0,notes:{r1:""},runId:null,sentPin:null});
+let state=fresh();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.interest)return Object.assign(fresh(),s)}catch(e){}return null}
+function loadHistory(){try{return JSON.parse(localStorage.getItem(HKEY)||"[]")}catch(e){return[]}}
+function saveHistory(h){try{localStorage.setItem(HKEY,JSON.stringify(h.slice(-20)))}catch(e){}}
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct=v=>Math.round(v*100)+" %";
+function show(id){["start","phase1","phase2","result"].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
+
+function allAreas(){
+  return AREAS.map((a,n)=>({key:"a"+n,name:a.name,q:a.w,custom:false}))
+    .concat(state.custom.map((c,n)=>({key:c.key,name:c.name,q:`Wie stark prägst du andere Menschen im Bereich „${c.name}“?`,custom:true})));
+}
+const relevant=()=>allAreas().filter(a=>(state.interest[a.key]||0)>=2);
+
+/* ---------- Egg geometry ---------- */
+function blob(cx,cy,r,seed,amp=0.1){
+  const pts=[],n=10;let s=seed;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280};
+  for(let k=0;k<n;k++){const a=k/n*Math.PI*2,rr=r*(1+rnd()*amp);pts.push([cx+Math.cos(a)*rr*1.06,cy+Math.sin(a)*rr])}
+  let d="";
+  for(let k=0;k<n;k++){
+    const p0=pts[(k-1+n)%n],p1=pts[k],p2=pts[(k+1)%n],p3=pts[(k+2)%n];
+    if(k===0)d+=`M${p1[0].toFixed(1)},${p1[1].toFixed(1)}`;
+    const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d+"Z";
+}
+function wedge(cx,cy,r,a0,a1){
+  if(a1-a0>=Math.PI*2-1e-6)return `M${cx-r},${cy}a${r},${r} 0 1,0 ${2*r},0a${r},${r} 0 1,0 ${-2*r},0Z`;
+  const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+  return `M${cx},${cy}L${x0.toFixed(2)},${y0.toFixed(2)}A${r.toFixed(2)},${r.toFixed(2)} 0 ${a1-a0>Math.PI?1:0},1 ${x1.toFixed(2)},${y1.toFixed(2)}Z`;
+}
+$("heroWhite").setAttribute("d",blob(172,148,108,7,0.12));
+// Zähflüssiges Eiweiß: jeder Randpunkt wandert langsam mit eigener Phase und Geschwindigkeit
+(function(){
+  const el=$("heroWhite"),n=10,cx=172,cy=148,r=108;
+  let sd=7;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  const base=[],ph=[],sp=[],ph2=[],sp2=[];
+  for(let k=0;k<n;k++){base.push(1+rnd()*0.12);ph.push(rnd()*6.283);sp.push(0.18+rnd()*0.17);ph2.push(rnd()*6.283);sp2.push(0.07+rnd()*0.08)}
+  const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function shape(t){
+    const pts=[];
+    for(let k=0;k<n;k++){
+      const a=k/n*Math.PI*2+Math.sin(t*0.05+ph2[k])*0.1;
+      const rr=r*(base[k]+0.095*Math.sin(t*sp[k]+ph[k])+0.06*Math.sin(t*sp2[k]+ph2[k]));
+      pts.push([cx+Math.cos(a)*rr*1.06,cy+Math.sin(a)*rr]);
+    }
+    let d="";
+    for(let k=0;k<n;k++){
+      const p0=pts[(k-1+n)%n],p1=pts[k],p2=pts[(k+1)%n],p3=pts[(k+2)%n];
+      if(k===0)d+=`M${p1[0].toFixed(1)},${p1[1].toFixed(1)}`;
+      const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+      d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+    }
+    return d+"Z";
+  }
+  el.setAttribute("d",shape(0));
+  if(reduce||!window.requestAnimationFrame)return;
+  const t0=performance.now();
+  (function loop(now){
+    if(!$("start").hidden)el.setAttribute("d",shape((now-t0)/1000));
+    requestAnimationFrame(loop);
+  })(t0);
+})();
+$("heroEgg").addEventListener("click",()=>{const e=$("heroEgg");e.classList.remove("jiggle");void e.getBoundingClientRect();e.classList.add("jiggle")});
+$("heroEgg").addEventListener("animationend",e=>{if(e.animationName.startsWith("jiggle"))$("heroEgg").classList.remove("jiggle")});
+
+/* ---------- Start ---------- */
+function startNew(){state=fresh();save();renderPhase1();show("phase1")}
+$("startBtn").onclick=startNew;
+$("resumeBtn").onclick=()=>{
+  if(state.screen==="result")renderResult(false);
+  else if(state.screen==="phase2"){renderPhase2();show("phase2")}
+  else{renderPhase1();show("phase1")}
+};
+
+/* ---------- Phase 1 ---------- */
+$("scaleKey").innerHTML=SCALE_I.map(([t,d],k)=>`<b>${k+1} – ${t}</b><span>${d}</span>`).join("");
+function renderPhase1(){
+  const list=$("areaList");list.innerHTML="";
+  allAreas().forEach(a=>{
+    const li=document.createElement("li");li.className="area";
+    const v=state.interest[a.key]||0;
+    li.innerHTML=`<div class="area-head"><span class="area-name" id="lbl-${a.key}"></span>${a.custom?`<button class="area-remove" data-rm="${a.key}">Entfernen</button>`:""}</div>
+      <div class="seg" role="radiogroup" aria-labelledby="lbl-${a.key}">${SCALE_I.map(([t],k)=>
+        `<button role="radio" aria-checked="${v===k+1}" data-k="${a.key}" data-v="${k+1}" aria-label="${k+1} – ${t}"><b>${k+1}</b></button>`).join("")}</div>`;
+    li.querySelector(".area-name").textContent=a.name;
+    list.appendChild(li);
+  });
+  const full=state.custom.length>=MAX_CUSTOM;$("addLinkWrap").hidden=full||!$("addArea").hidden;if(full)$("addArea").hidden=true;
+  updateP1Status();
+}
+$("areaList").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.rm){state.custom=state.custom.filter(c=>c.key!==b.dataset.rm);delete state.interest[b.dataset.rm];delete state.influence[b.dataset.rm];save();renderPhase1();return}
+  const k=b.dataset.k,v=+b.dataset.v;if(!k)return;
+  state.interest[k]=v;save();
+  b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-checked",x===b?"true":"false"));
+  updateP1Status();
+});
+function updateP1Status(){
+  const open=allAreas().filter(a=>!state.interest[a.key]).length;
+  const rel=relevant().length;
+  $("p1Next").disabled=open>0||rel===0;
+  $("p1Status").textContent= open>0 ? (open===1?"Noch 1 Bereich offen":`Noch ${open} Bereiche offen`)
+    : rel===0 ? "Wähle für mindestens einen Bereich mehr als „kaum“." : "";
+}
+function addCustom(){
+  const name=$("addInput").value.trim();
+  if(!name||state.custom.length>=MAX_CUSTOM)return;
+  if(allAreas().some(a=>a.name.toLowerCase()===name.toLowerCase())){$("addInput").value="";return}
+  const key="c"+Date.now().toString(36);
+  state.custom.push({key,name});$("addInput").value="";save();renderPhase1();
+  const btn=document.querySelector(`[data-k="${key}"]`);if(btn)btn.focus();
+}
+$("addBtn").onclick=addCustom;
+$("addLink").onclick=()=>{$("addLinkWrap").hidden=true;$("addArea").hidden=false;$("addInput").focus()};
+$("addInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addCustom()}});
+$("p1Back").onclick=()=>{showStart()};
+$("p1Next").onclick=()=>{
+  const rel=relevant();const first=rel.findIndex(a=>!state.influence[a.key]);
+  state.screen="phase2";state.pos=first>=0?first:0;save();renderPhase2();show("phase2");
+};
+
+/* ---------- Phase 2 ---------- */
+function renderPhase2(){
+  const rel=relevant();if(state.pos>=rel.length)state.pos=rel.length-1;
+  const a=rel[state.pos];
+  $("p2Count").textContent=`Schritt 2 von 2 · ${state.pos+1} von ${rel.length}`;
+  $("p2Bar").style.width=(rel.filter(x=>state.influence[x.key]).length/rel.length*100)+"%";
+  $("p2Area").textContent=a.name;
+  $("p2Q").textContent=a.q;
+  const sc=$("p2Scale");sc.innerHTML="";
+  SCALE_W.forEach(([t,d],k)=>{
+    const b=document.createElement("button");b.className="opt";b.setAttribute("role","radio");
+    b.setAttribute("aria-checked",state.influence[a.key]===k+1?"true":"false");
+    b.innerHTML=`<span class="dot"></span><span class="txt"><b>${k+1} – ${t}</b>${state.pos<2?`<span>${d}</span>`:""}</span><kbd>${k+1}</kbd>`;
+    b.onclick=()=>answer(k+1);sc.appendChild(b);
+  });
+}
+let locked=false;
+function answer(v){
+  if(locked)return;
+  const rel=relevant(),a=rel[state.pos];
+  state.influence[a.key]=v;save();
+  [...$("p2Scale").children].forEach((b,k)=>b.setAttribute("aria-checked",k+1===v?"true":"false"));
+  $("p2Bar").style.width=(rel.filter(x=>state.influence[x.key]).length/rel.length*100)+"%";
+  locked=true;
+  setTimeout(()=>{
+    locked=false;
+    const next=rel.findIndex((x,i)=>i>state.pos&&!state.influence[x.key]);
+    const any=rel.findIndex(x=>!state.influence[x.key]);
+    if(next>=0)state.pos=next;else if(any>=0)state.pos=any;else{renderResult(true);return}
+    save();renderPhase2();
+  },220);
+}
+$("p2Back").onclick=()=>{
+  if(state.pos>0){state.pos--;save();renderPhase2()}
+  else{state.screen="phase1";save();renderPhase1();show("phase1")}
+};
+document.addEventListener("keydown",e=>{
+  if($("phase2").hidden||/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(/^[1-5]$/.test(e.key))answer(+e.key);
+  if(e.key==="Backspace"||e.key==="ArrowLeft")$("p2Back").click();
+});
+
+/* ---------- Scoring ---------- */
+// a = Interesse 0..1, b = Einfluss 0..1. Jeder Bereich belegt a vom Eiweiß; davon ist der Anteil b gelb (m = a·b).
+function compute(){
+  const rows=relevant().map(x=>{
+    const i=state.interest[x.key],w=state.influence[x.key]||1;
+    const a=(i-1)/4,b=(w-1)/4;
+    return {...x,i,w,a,b,m:a*b,over:Math.max(b-a,0)};
+  });
+  const sumA=rows.reduce((s,r)=>s+r.a,0),sumM=rows.reduce((s,r)=>s+r.m,0);
+  const I=rows.length?sumA/rows.length:0;
+  const share=sumA>0?sumM/sumA:0;
+  const W=I*share;
+  const skipped=allAreas().filter(a=>(state.interest[a.key]||0)<2).map(a=>a.name);
+  return {rows,I,W,share,sumA,sumM,skipped};
+}
+function quadrant(i,w){
+  const hi=i>=4,hw=w>=4;
+  if(hi&&hw)return"core";if(hi)return"outside";if(hw)return"foreign";return"edge";
+}
+
+/* ---------- Result ---------- */
+let R=null, eggMode="classic", active=null;
+function renderResult(isNew){
+  R=compute();state.screen="result";
+  if(isNew||!state.runId){
+    state.runId=Date.now().toString(36);
+    const h=loadHistory();
+    h.push({id:state.runId,date:Date.now(),I:R.I,W:R.W,share:R.share,
+      areas:R.rows.map(r=>({name:r.name,i:r.i,w:r.w}))});
+    saveHistory(h);
+  }
+  save();
+  eggMode="classic";active=null;
+  drawEgg(true);setInfo();
+
+  const {rows,I,W,share}=R;
+  $("lead").textContent=`${pct(share)} deines Interessensbereichs sind gelb.`;
+  $("more").open=false;
+
+  const h=loadHistory(),idx=h.findIndex(x=>x.id===state.runId),prev=idx>0?h[idx-1]:null;
+  if(prev){
+    const d=new Date(prev.date).toLocaleDateString("de-DE",{day:"numeric",month:"long",year:"numeric"});
+    const diff=Math.round((share-prev.share)*100);
+    $("compare").innerHTML=`Am ${d} waren es ${pct(prev.share)}. `+
+      (diff>0?`<span class="up">Dein Gelb ist gewachsen.</span>`:diff<0?"Dein Gelb ist kleiner geworden.":"Unverändert.");
+    $("compare").hidden=false;
+  }else $("compare").hidden=true;
+
+  const vals=r=>`Interesse ${r.i} von 5, Wirkung ${r.w} von 5.`;
+  const strong=[...rows].sort((a,b)=>b.w-a.w||b.i-a.i)[0];
+  $("hStrong").textContent=strong.name;$("hStrongT").textContent=vals(strong);
+  const gap=rows.filter(r=>r.i>=3&&r.i>r.w).sort((a,b)=>(b.i-b.w)-(a.i-a.w)||b.i-a.i)[0];
+  $("hGap").textContent=gap?gap.name:"Keines";
+  $("hGapT").textContent=gap?vals(gap)+" Hier ist der Abstand am größten.":"Wo dich etwas beschäftigt, hast du schon ebenso viel Einfluss.";
+
+  $("moreIntro").textContent=`Interessensbereich ${pct(I)}, Wirkungsbereich ${pct(W)}. Die gestrichelte Linie im Spiegelei steht für 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
+  const order={core:0,outside:1,foreign:2,edge:3};
+  const list=$("fields");list.innerHTML="";
+  rows.map(r=>({...r,q:quadrant(r.i,r.w)})).sort((a,b)=>order[a.q]-order[b.q]||b.i-a.i||b.w-a.w).forEach(r=>{
+    const li=document.createElement("li");li.className="field";li.dataset.key=r.key;li.tabIndex=0;
+    li.innerHTML=`<span class="name"></span><span class="tag ${r.q}">${TAGS[r.q].label}</span>
+      <div class="bars"><span>Interesse</span><div class="bar i"><i style="width:${r.i/5*100}%"></i></div><output>${r.i}</output>
+      <span>Wirkung</span><div class="bar w"><i style="width:${r.w/5*100}%"></i></div><output>${r.w}</output></div>
+      <p class="imp"></p>`;
+    li.querySelector(".name").textContent=r.name;
+    li.querySelector(".imp").textContent=TAGS[r.q].impulse;
+    list.appendChild(li);
+  });
+  $("skipped").textContent=R.skipped.length?`Nicht berücksichtigt: ${R.skipped.join(", ")}.`:"";
+
+  $("r1").value=state.notes.r1||"";
+  refreshGroupUI();
+  show("result");
+}
+["r1"].forEach(id=>$(id).addEventListener("input",e=>{
+  state.notes[id]=e.target.value;save();
+  const h=loadHistory(),x=h.find(y=>y.id===state.runId);if(x){x.notes=state.notes;saveHistory(h)}
+}));
+
+function drawEgg(animate){
+  const {rows,I,share,sumA}=R;
+  const Rmax=140,Rw=Rmax*Math.sqrt(Math.max(I,0.03)),cx=190,cy=175;
+  let inner="";
+  if(eggMode==="classic"){
+    const Ry=Rw*Math.sqrt(share);
+    inner=`<g class="anim ${animate?"pop":""}"><path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/></g>`+
+      (Ry>0.5?`<g class="anim ${animate?"pop-y":""}"><circle cx="${cx}" cy="${cy}" r="${Ry.toFixed(1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1.5"/>
+      <ellipse cx="${(cx-Ry*0.35).toFixed(1)}" cy="${(cy-Ry*0.38).toFixed(1)}" rx="${(Ry*0.22).toFixed(1)}" ry="${(Ry*0.15).toFixed(1)}" fill="#fff" opacity=".45"/></g>`:"");
+  }else{
+    // Jeder Bereich bekommt einen Winkel proportional zu seinem Interesse; der gelbe Keil füllt flächentreu den Anteil b davon
+    let ang=-Math.PI/2,ws="";
+    rows.forEach(r=>{
+      const th=sumA>0?r.a/sumA*Math.PI*2:0,a0=ang,a1=ang+th;ang=a1;
+      const ry=Rw*Math.sqrt(r.b);
+      ws+=`<g class="wedge${active===r.key?" on":""}" data-key="${r.key}">
+        <path d="${wedge(cx,cy,Rw*1.25,a0,a1)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="1.5" clip-path="url(#eggClip)"/>
+        ${ry>0.5?`<path d="${wedge(cx,cy,ry,a0,a1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1"/>`:""}
+        <title>${esc(r.name)}</title></g>`;
+    });
+    inner=`<defs><clipPath id="eggClip"><path d="${blob(cx,cy,Rw,11)}"/></clipPath></defs>
+      <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>
+      <g class="${active?"dim":""}">${ws}</g>`;
+  }
+  $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} im Wirkungsbereich">
+    <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
+}
+function setInfo(){
+  $("eggInfo").hidden=false;
+  const sp=eggMode==="split";
+  $("viewSwitch").setAttribute("aria-checked",sp?"true":"false");
+  $("swLeft").classList.toggle("on-lbl",!sp);$("swRight").classList.toggle("on-lbl",sp);
+  if(!sp){$("eggInfo").hidden=true;return}
+  if(!active){$("eggInfo").textContent="Jeder Keil ist ein Bereich. Je breiter, desto mehr Raum nimmt er ein, je gelber, desto mehr bewegst du dort. Tippe auf einen Keil für Details.";return}
+  const r=R.rows.find(x=>x.key===active);if(!r)return;
+  const ofWhite=R.sumA>0?r.a/R.sumA:0;
+  $("eggInfo").innerHTML=`<b>${esc(r.name)}</b> nimmt ${pct(ofWhite)} deines Eiweißes ein. Dein Einfluss füllt davon ${pct(r.b)} gelb.`;
+}
+function setActive(key){
+  active=(active===key)?null:key;
+  if(eggMode!=="split")setMode("split");else drawEgg(false);
+  document.querySelectorAll(".field").forEach(li=>li.classList.toggle("on",li.dataset.key===active));
+  setInfo();
+}
+function setMode(m){
+  eggMode=m;
+  if(m==="classic"){active=null;document.querySelectorAll(".field").forEach(li=>li.classList.remove("on"))}
+  drawEgg(false);setInfo();
+}
+$("more").addEventListener("toggle",()=>{if(!R)return;setMode($("more").open?"split":"classic")});
+$("eggStage").addEventListener("click",e=>{const g=e.target.closest(".wedge");if(g)setActive(g.dataset.key)});
+$("viewSwitch").addEventListener("click",()=>{if(R)setMode(eggMode==="classic"?"split":"classic")});
+$("fields").addEventListener("click",e=>{const li=e.target.closest(".field");if(li){setActive(li.dataset.key);$("eggStage").scrollIntoView({behavior:"smooth",block:"center"})}});
+$("fields").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const li=e.target.closest(".field");if(li){e.preventDefault();setActive(li.dataset.key)}}});
+
+$("restartBtn").onclick=()=>startNew();
+$("shareBtn").onclick=async()=>{$("groupSection").hidden=false;$("shareBtn").hidden=true;
+  const g=await connect();
+  if(!g){$("pinInput").disabled=true;$("pinBtn").disabled=true;$("groupStatus").textContent="Die Gruppenauswertung ist noch nicht eingerichtet (Firebase-Zugangsdaten in gruppe.js fehlen)."}
+const i=$("pinInput")||$("contribBtn");if(i){i.focus();i.scrollIntoView({behavior:"smooth",block:"center"})}};
+
+/* ---------- Image download ---------- */
+async function makePng(){
+  try{await document.fonts.ready}catch(e){}
+  const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  x.fillStyle="#131E3D";x.fillRect(0,0,W,H);
+  x.fillStyle="#EEF2FA";x.textAlign="center";
+  x.font='72px "Young Serif", Georgia, serif';x.fillText("Mein Spiegelei",W/2,140);
+  x.font='32px Figtree, system-ui, sans-serif';x.fillStyle="#A8B4CE";
+  x.fillText("Der Einfluss-Test von Thomas „Döm“ Löwen · "+new Date().toLocaleDateString("de-DE"),W/2,195);
+  const s=2.4,cx=W/2,cy=560,Rmax=140*s,Rw=Rmax*Math.sqrt(Math.max(R.I,0.03)),Ry=Rw*Math.sqrt(R.share);
+  x.save();x.translate(cx-190*s,cy-175*s);x.scale(s,s);
+  x.setLineDash([6,7]);x.strokeStyle="#2D3D6A";x.lineWidth=2;x.stroke(new Path2D(blob(190,175,140,11)));x.setLineDash([]);
+  const wp=new Path2D(blob(190,175,Rw/s,11));x.fillStyle="#fff";x.fill(wp);x.strokeStyle="#D5DDE8";x.stroke(wp);
+  x.restore();
+  if(Ry>1){x.beginPath();x.arc(cx,cy,Ry,0,Math.PI*2);x.fillStyle="#F5B21B";x.fill();x.lineWidth=3;x.strokeStyle="#DD8A0A";x.stroke();
+    x.beginPath();x.ellipse(cx-Ry*.35,cy-Ry*.38,Ry*.22,Ry*.15,0,0,Math.PI*2);x.fillStyle="rgba(255,255,255,.45)";x.fill()}
+  const stats=[[pct(R.I),"Interessensbereich"],[pct(R.W),"Wirkungsbereich"],[pct(R.share),"Wirkungsanteil"]];
+  stats.forEach(([v,l],k)=>{const sx=W/6+k*W/3;x.fillStyle="#EEF2FA";x.font='64px "Young Serif", Georgia, serif';x.fillText(v,sx,1010);
+    x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,sx,1055)});
+  x.textAlign="left";x.font='600 30px Figtree, system-ui, sans-serif';
+  const lines=[["Hier bewege ich am meisten",$("hStrong").textContent],["Hier steckt ungenutztes Potenzial",$("hGap").textContent]];
+  lines.forEach(([l,v],k)=>{const y=1150+k*80;x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,110,y);
+    x.fillStyle="#EEF2FA";x.font='600 34px Figtree, system-ui, sans-serif';x.fillText(v.length>34?v.slice(0,33)+"…":v,110,y+40)});
+  x.textAlign="center";x.fillStyle="#F5B21B";x.font='600 28px Figtree, system-ui, sans-serif';x.fillText("thomasloewen.de",W/2,H-50);
+  return await new Promise(res=>c.toBlob(res,"image/png"));
+}
+$("dlBtn").onclick=async()=>{
+  try{
+    const blob=await makePng(),url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="mein-spiegelei.png";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+  }catch(e){$("dlStatus").textContent="Das Bild konnte nicht erstellt werden."}
+};
+
+/* ---------- Gruppe (PIN, Firebase) ---------- */
+let G=null;
+async function connect(){
+  if(G!==null)return G;
+  try{const m=await import("./gruppe.js");G=await m.connect()}catch(e){G=false}
+  return G;
+}
+function groupPayload(){
+  const areas={};
+  AREAS.forEach((a,n)=>{const i=state.interest["a"+n]||1;areas["a"+n]={i,w:i>=2?(state.influence["a"+n]||1):0}});
+  return {I:R.I,W:R.W,share:R.share,areas};
+}
+async function refreshGroupUI(){
+  const g=await connect();
+  $("groupSection").hidden=true;$("shareBtn").hidden=false;
+  $("groupStatus").textContent=state.sentPin?`Dein Ergebnis wurde an die Gruppe ${state.sentPin} gesendet.`:"";
+}
+async function sendPin(){
+  const pin=$("pinInput").value.replace(/\D/g,"");
+  const st=$("groupStatus");
+  if(pin.length!==4){st.textContent="Bitte gib die vierstellige PIN ein.";return}
+  if(state.sentPin===pin){st.textContent="Du hast dein Ergebnis bereits an diese Gruppe gesendet.";return}
+  const g=await connect();if(!g){st.textContent="Die Gruppenauswertung ist gerade nicht erreichbar.";return}
+  const {db,fs}=g;
+  $("pinBtn").disabled=true;st.textContent="Wird gesendet …";
+  try{
+    const snap=await fs.getDoc(fs.doc(db,"sessions",pin));
+    if(!snap.exists()){st.textContent="Diese PIN gibt es nicht. Frag bei der Gruppenleitung nach.";return}
+    await fs.addDoc(fs.collection(db,"sessions",pin,"results"),{...groupPayload(),at:fs.serverTimestamp()});
+    state.sentPin=pin;save();$("pinInput").value="";
+    st.textContent="Danke! Dein Ergebnis ist anonym in der Gruppenauswertung.";
+  }catch(e){st.textContent="Das hat gerade nicht geklappt. Prüf deine Verbindung und versuch es noch einmal."}
+  finally{$("pinBtn").disabled=false}
+}
+$("pinBtn").onclick=sendPin;
+$("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendPin()});
+
+/* ---------- Boot ---------- */
+function showStart(){
+  const s=load();
+  if(s&&(Object.keys(s.interest).length||s.screen==="result")){
+    state=s;$("resume").hidden=false;
+    if(s.screen==="result"){$("resumeTxt").textContent="Du hast den Test abgeschlossen.";$("resumeBtn").textContent="Ergebnis ansehen"}
+    else{$("resumeTxt").textContent="Du hast schon angefangen.";$("resumeBtn").textContent="Weitermachen"}
+  }else $("resume").hidden=true;
+  show("start");
+}
+showStart();
+</script>
+</body>
+</html>
