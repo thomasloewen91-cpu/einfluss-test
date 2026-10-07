@@ -6,7 +6,7 @@
 <title>Der Einfluss-Test – Thomas „Döm“ Löwen</title>
 <meta name="description" content="Wie viel von dem, was dich beschäftigt, kannst du tatsächlich bewegen? Ein kurzer Test von Thomas „Döm“ Löwen.">
 <meta property="og:title" content="Der Einfluss-Test">
-<meta property="og:description" content="Entdecke den Unterschied zwischen dem, was dich interessiert, und dem, was du bewirken kannst.">
+<meta property="og:description" content="Finde heraus, wie viel Einfluss du heute schon hast und wo du ihn noch erweitern kannst.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#131E3D">
 <style>
@@ -270,7 +270,7 @@ details.more[open]>summary::after{content:" −"}
       </svg>
       <h1>Der <span class="ei">Ei</span>nfluss-Test</h1>
       <p class="byline">von <a href="https://thomasloewen.de" target="_blank" rel="noopener">Thomas „Döm“ Löwen</a></p>
-      <p class="tagline">Entdecke den Unterschied zwischen dem, was dich interessiert, und dem, was du bewirken kannst.</p>
+      <p class="tagline">Finde heraus, wie viel Einfluss du heute schon hast und wo du ihn noch erweitern kannst.</p>
       <button class="btn" id="startBtn" style="margin-top:14px">Test starten</button>
       <p class="small">Dauert etwa 3 Minuten.</p>
       <div class="resume" id="resume" hidden>
@@ -324,7 +324,7 @@ details.more[open]>summary::after{content:" −"}
       <button class="switch" id="viewSwitch" role="switch" aria-checked="false" aria-label="Nach Bereichen aufschlüsseln"><span></span></button>
       <span id="swRight">Bereiche</span>
     </div>
-    <div class="legend-inline"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Wirkung</span></div>
+    <div class="legend-inline"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Einfluss</span></div>
     <p class="egg-info" id="eggInfo" aria-live="polite"></p>
     <p class="lead" id="lead"></p>
     <p class="lead-sub" id="compare" hidden></p>
@@ -410,7 +410,7 @@ const SCALE_W = [
   ["sehr großer Einfluss","Ich trage hier wesentliche Verantwortung. Vieles richtet sich nach mir."]
 ];
 const TAGS = {
-  core:   {label:"Wirkungsbereich", text:"Der Bereich prägt dein Leben, und du bewegst dort viel.",
+  core:   {label:"Einflussbereich", text:"Der Bereich prägt dein Leben, und du bewegst dort viel.",
            impulse:"Hier liegt deine Stärke. Investiere bewusst weiter und überlege, wen du mitnehmen oder befähigen kannst."},
   outside:{label:"Interessensbereich", text:"Der Bereich beschäftigt dich stark, liegt aber außerhalb deines aktuellen Einflusses.",
            impulse:"Gibt es hier eine kleine Rolle, in der du Verantwortung übernehmen könntest? Oder darf der Bereich einfach Freude bleiben, ohne dass du etwas bewegen musst?"},
@@ -640,21 +640,21 @@ function renderResult(isNew){
     $("compare").hidden=false;
   }else $("compare").hidden=true;
 
-  const vals=r=>`Interesse ${r.i} von 5, Wirkung ${r.w} von 5.`;
+  const vals=r=>`Interesse ${r.i} von 5, Einfluss ${r.w} von 5.`;
   const strong=[...rows].sort((a,b)=>b.w-a.w||b.i-a.i)[0];
   $("hStrong").textContent=strong.name;$("hStrongT").textContent=vals(strong);
   const gap=rows.filter(r=>r.i>=3&&r.i>r.w).sort((a,b)=>(b.i-b.w)-(a.i-a.w)||b.i-a.i)[0];
   $("hGap").textContent=gap?gap.name:"Keines";
   $("hGapT").textContent=gap?vals(gap)+" Hier ist der Abstand am größten.":"Wo dich etwas beschäftigt, hast du schon ebenso viel Einfluss.";
 
-  $("moreIntro").textContent=`Interessensbereich ${pct(I)}, Wirkungsbereich ${pct(W)}. Die gestrichelte Linie im Spiegelei steht für 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
+  $("moreIntro").textContent=`Interessensbereich ${pct(I)}, Einflussbereich ${pct(W)}. Die gestrichelte Linie im Spiegelei steht für 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
   const order={core:0,outside:1,foreign:2,edge:3};
   const list=$("fields");list.innerHTML="";
   rows.map(r=>({...r,q:quadrant(r.i,r.w)})).sort((a,b)=>order[a.q]-order[b.q]||b.i-a.i||b.w-a.w).forEach(r=>{
     const li=document.createElement("li");li.className="field";li.dataset.key=r.key;li.tabIndex=0;
     li.innerHTML=`<span class="name"></span><span class="tag ${r.q}">${TAGS[r.q].label}</span>
       <div class="bars"><span>Interesse</span><div class="bar i"><i style="width:${r.i/5*100}%"></i></div><output>${r.i}</output>
-      <span>Wirkung</span><div class="bar w"><i style="width:${r.w/5*100}%"></i></div><output>${r.w}</output></div>
+      <span>Einfluss</span><div class="bar w"><i style="width:${r.w/5*100}%"></i></div><output>${r.w}</output></div>
       <p class="imp"></p>`;
     li.querySelector(".name").textContent=r.name;
     li.querySelector(".imp").textContent=TAGS[r.q].impulse;
@@ -695,7 +695,7 @@ function drawEgg(animate){
       <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>
       <g class="${active?"dim":""}">${ws}</g>`;
   }
-  $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} im Wirkungsbereich">
+  $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} im Einflussbereich">
     <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
 }
 function setInfo(){
@@ -749,7 +749,7 @@ async function makePng(){
   x.restore();
   if(Ry>1){x.beginPath();x.arc(cx,cy,Ry,0,Math.PI*2);x.fillStyle="#F5B21B";x.fill();x.lineWidth=3;x.strokeStyle="#DD8A0A";x.stroke();
     x.beginPath();x.ellipse(cx-Ry*.35,cy-Ry*.38,Ry*.22,Ry*.15,0,0,Math.PI*2);x.fillStyle="rgba(255,255,255,.45)";x.fill()}
-  const stats=[[pct(R.I),"Interessensbereich"],[pct(R.W),"Wirkungsbereich"],[pct(R.share),"Wirkungsanteil"]];
+  const stats=[[pct(R.I),"Interessensbereich"],[pct(R.W),"Einflussbereich"],[pct(R.share),"Einflussanteil"]];
   stats.forEach(([v,l],k)=>{const sx=W/6+k*W/3;x.fillStyle="#EEF2FA";x.font='64px "Young Serif", Georgia, serif';x.fillText(v,sx,1010);
     x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,sx,1055)});
   x.textAlign="left";x.font='600 30px Figtree, system-ui, sans-serif';

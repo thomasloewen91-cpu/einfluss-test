@@ -125,7 +125,7 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
       <div class="result">
         <div class="egg">
           <div id="egg"></div>
-          <div class="legend"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Wirkung</span></div>
+          <div class="legend"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Einfluss</span></div>
         </div>
         <div>
           <p class="lead" id="lead"></p>
@@ -136,7 +136,7 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
       <details>
         <summary>Alle Bereiche</summary>
         <p class="muted" style="margin:10px 0 0;font-size:.95rem">Durchschnitt unter denen, für die der Bereich mindestens „wenig“ Raum einnimmt. Skala 1 bis 5.</p>
-        <div class="tw"><table><thead><tr><th>Bereich</th><th class="num">Personen</th><th class="num">Interesse</th><th class="num">Wirkung</th></tr></thead><tbody id="tbody"></tbody></table></div>
+        <div class="tw"><table><thead><tr><th>Bereich</th><th class="num">Personen</th><th class="num">Interesse</th><th class="num">Einfluss</th></tr></thead><tbody id="tbody"></tbody></table></div>
       </details>
     </div>
 
@@ -241,9 +241,9 @@ function render(docs){
   const enough=stats.filter(s=>s.n>=2);
   const strong=[...enough].sort((a,b)=>b.aw-a.aw||b.n-a.n)[0];
   $("strong").textContent=strong?strong.name:"–";
-  $("strongT").textContent=strong?`Wirkung ${f1(strong.aw)} von 5, ${strong.n} Personen`:"Noch zu wenige Angaben.";
+  $("strongT").textContent=strong?`Einfluss ${f1(strong.aw)} von 5, ${strong.n} Personen`:"Noch zu wenige Angaben.";
   const gaps=enough.filter(s=>s.gap>0).sort((a,b)=>b.gap-a.gap).slice(0,3);
-  $("gaps").innerHTML=gaps.length?gaps.map(g=>`<div><b>${esc(g.name)}</b><span>Interesse ${f1(g.ai)} · Wirkung ${f1(g.aw)}</span></div>`).join("")
+  $("gaps").innerHTML=gaps.length?gaps.map(g=>`<div><b>${esc(g.name)}</b><span>Interesse ${f1(g.ai)} · Einfluss ${f1(g.aw)}</span></div>`).join("")
     :'<p>Wo euch etwas beschäftigt, habt ihr auch Einfluss.</p>';
   $("tbody").innerHTML=stats.sort((a,b)=>b.n-a.n||b.ai-a.ai).map(s=>
     `<tr><td>${esc(s.name)}</td><td class="num">${s.n}</td><td class="num">${s.n?f1(s.ai):"–"}</td><td class="num">${s.n?f1(s.aw):"–"}</td></tr>`).join("");
