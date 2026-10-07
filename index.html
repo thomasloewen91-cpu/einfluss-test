@@ -236,6 +236,17 @@ details.more[open]>summary::after{content:" −"}
 @keyframes jiggle-w{0%{transform:scale(1)}20%{transform:scale(1.08,.92)}45%{transform:scale(.95,1.05)}70%{transform:scale(1.02,.98)}100%{transform:scale(1)}}
 @keyframes jiggle-y{0%{transform:translate(0,0)}15%{transform:translate(0,-14px) scale(.94,1.08)}40%{transform:translate(0,4px) scale(1.1,.9)}65%{transform:translate(0,-3px) scale(.98,1.03)}100%{transform:translate(0,0)}}
 
+
+/* Mobile-Absicherung */
+body{overflow-x:clip}
+input,textarea,select{max-width:100%;min-width:0}
+.add-area input{min-width:0}
+.pin-row{display:flex;gap:10px;align-items:stretch;max-width:420px}
+.pin-row input{flex:0 0 7.5rem;width:7.5rem;padding:12px 8px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font-size:1.35rem;letter-spacing:.25em;text-align:center;font-variant-numeric:tabular-nums}
+.pin-row input::placeholder{letter-spacing:.1em;color:var(--muted)}
+.pin-row .btn{flex:1 1 auto;min-width:0;padding:14px 16px;white-space:nowrap}
+@media (max-width:360px){.pin-row{flex-direction:column}.pin-row input{flex:none;width:100%}}
+
 /* Brand */
 .ei{color:var(--yolk)}
 .brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
@@ -292,7 +303,7 @@ details.more[open]>summary::after{content:" −"}
     <ul class="areas" id="areaList"></ul>
     <p id="addLinkWrap" style="margin:0 0 26px"><button class="linkbtn" id="addLink">Eigenen Bereich hinzufügen</button></p>
     <div class="add-area" id="addArea" hidden>
-      <input id="addInput" type="text" maxlength="40" placeholder="z. B. Fotografie" aria-label="Eigenen Bereich hinzufügen" autocomplete="off">
+      <input id="addInput" type="text" size="10" maxlength="40" placeholder="z. B. Fotografie" aria-label="Eigenen Bereich hinzufügen" autocomplete="off">
       <button class="btn btn-ghost" id="addBtn">Hinzufügen</button>
     </div>
     <div class="phase-foot">
@@ -359,8 +370,8 @@ details.more[open]>summary::after{content:" −"}
     <section id="groupSection" hidden style="margin:22px 0 0">
       <div class="group-box">
         <p>Gib die PIN ein, die die Gruppenleitung zeigt. Dein Ergebnis wird anonym übertragen, ohne Namen und ohne Notizen.</p>
-        <div class="add-area" style="margin:0">
-          <input id="pinInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="PIN" aria-label="Gruppen-PIN" autocomplete="off" style="flex:0 1 140px;font-size:1.3rem;letter-spacing:.3em;text-align:center">
+        <div class="pin-row">
+          <input id="pinInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" size="4" placeholder="PIN" aria-label="Gruppen-PIN" autocomplete="off" enterkeyhint="send">
           <button class="btn" id="pinBtn">Anonym senden</button>
         </div>
         <p class="status" id="groupStatus"></p>

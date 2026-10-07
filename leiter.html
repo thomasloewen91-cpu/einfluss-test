@@ -75,6 +75,8 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* Brand */
+body{overflow-x:clip}
+input{max-width:100%;min-width:0}
 .brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
 .wordmark{font-family:"Young Serif",Georgia,serif;font-size:1.05rem;color:var(--ink);text-decoration:none;letter-spacing:.01em}
 .wordmark:hover{color:var(--yolk)}
@@ -103,7 +105,7 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
     <div class="row"><button class="btn" id="newBtn">Neue Gruppe starten</button></div>
     <p class="muted" style="margin-top:28px">Gruppe schon gestartet?</p>
     <div class="row">
-      <input id="openInput" inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="Bestehende PIN">
+      <input id="openInput" inputmode="numeric" maxlength="4" size="4" placeholder="PIN" aria-label="Bestehende PIN">
       <button class="btn btn-ghost" id="openBtn">Öffnen</button>
     </div>
     <p class="status" id="setupStatus"></p>
