@@ -86,6 +86,19 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
 .qr-close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;padding:10px 18px}
 @media (max-aspect-ratio:1/1){.qr-info{text-align:center}}
 
+/* Spiegelei-Schalter */
+.switch-row{display:flex;align-items:center;justify-content:center;gap:12px;margin:6px 0 8px;font-size:.95rem;color:var(--muted)}
+.switch-row .on-lbl{color:var(--ink);font-weight:600}
+.switch{position:relative;width:52px;height:30px;border-radius:999px;border:0;background:var(--line);padding:0;transition:background .2s}
+.switch span{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--yolk)}
+.switch[aria-checked="true"] span{transform:translateX(22px)}
+.egg-info{text-align:center;color:var(--muted);font-size:.95rem;margin:0 auto 8px;max-width:40ch;min-height:2.8em}
+.egg-info b{color:var(--ink)}
+.wedge{cursor:pointer;transition:opacity .2s}
+.dim .wedge{opacity:.3}
+.dim .wedge.on{opacity:1}
+
 /* Brand */
 body{overflow-x:clip}
 input{max-width:100%;min-width:0}
@@ -139,6 +152,12 @@ input{max-width:100%;min-width:0}
       <div class="result">
         <div class="egg">
           <div id="egg"></div>
+          <div class="switch-row">
+            <span id="swLeft" class="on-lbl">Spiegelei</span>
+            <button class="switch" id="viewSwitch" role="switch" aria-checked="false" aria-label="Nach Bereichen aufschlüsseln"><span></span></button>
+            <span id="swRight">Bereiche</span>
+          </div>
+          <p class="egg-info" id="eggInfo" aria-live="polite" hidden></p>
           <div class="legend"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Einfluss</span></div>
         </div>
         <div>
@@ -243,6 +262,51 @@ function openSession(pin){
     ()=>{$("waitTxt").textContent="Die Verbindung ist unterbrochen. Lade die Seite neu."});
 }
 
+let EGG=null,eggMode="classic",active=null;
+function wedge(cx,cy,r,a0,a1){
+  if(a1-a0>=Math.PI*2-1e-6)return `M${cx-r},${cy}a${r},${r} 0 1,0 ${2*r},0a${r},${r} 0 1,0 ${-2*r},0Z`;
+  const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+  return `M${cx},${cy}L${x0.toFixed(2)},${y0.toFixed(2)}A${r.toFixed(2)},${r.toFixed(2)} 0 ${a1-a0>Math.PI?1:0},1 ${x1.toFixed(2)},${y1.toFixed(2)}Z`;
+}
+function drawEgg(){
+  if(!EGG)return;
+  const {I,share,parts,total}=EGG,Rmax=150,Rw=Rmax*Math.sqrt(Math.max(I,0.03)),cx=190,cy=175;
+  let inner="";
+  if(eggMode==="classic"){
+    const Ry=Rw*Math.sqrt(share);
+    inner=`<path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>`+
+      (Ry>0.5?`<circle cx="${cx}" cy="${cy}" r="${Ry.toFixed(1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1.5"/>
+      <ellipse cx="${(cx-Ry*.35).toFixed(1)}" cy="${(cy-Ry*.38).toFixed(1)}" rx="${(Ry*.22).toFixed(1)}" ry="${(Ry*.15).toFixed(1)}" fill="#fff" opacity=".45"/>`:"");
+  }else{
+    let ang=-Math.PI/2,ws="";
+    parts.forEach(x=>{
+      const th=total>0?x.sA/total*Math.PI*2:0,a0=ang,a1=ang+th;ang=a1;
+      const ry=Rw*Math.sqrt(x.b);
+      ws+=`<g class="wedge${active===x.k?" on":""}" data-k="${x.k}">
+        <path d="${wedge(cx,cy,Rw*1.25,a0,a1)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="1.5" clip-path="url(#gClip)"/>
+        ${ry>0.5?`<path d="${wedge(cx,cy,ry,a0,a1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1"/>`:""}
+        <title>${esc(x.name)}</title></g>`;
+    });
+    inner=`<defs><clipPath id="gClip"><path d="${blob(cx,cy,Rw,11)}"/></clipPath></defs>
+      <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>
+      <g class="${active!==null?"dim":""}">${ws}</g>`;
+  }
+  $("egg").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Gruppen-Spiegelei">
+    <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
+  setInfo();
+}
+function setInfo(){
+  const sp=eggMode==="split";
+  $("viewSwitch").setAttribute("aria-checked",sp?"true":"false");
+  $("swLeft").classList.toggle("on-lbl",!sp);$("swRight").classList.toggle("on-lbl",sp);
+  $("eggInfo").hidden=!sp;if(!sp)return;
+  const x=EGG&&EGG.parts.find(p=>p.k===active);
+  if(!x){$("eggInfo").textContent="Jeder Keil ist ein Bereich. Je breiter, desto mehr Raum nimmt er in der Gruppe ein, je gelber, desto mehr Einfluss habt ihr dort. Tippe auf einen Keil.";return}
+  $("eggInfo").innerHTML=`<b>${esc(x.name)}</b> nimmt ${pct(EGG.total>0?x.sA/EGG.total:0)} eures Eiweißes ein. Euer Einfluss füllt davon ${pct(x.b)} gelb.`;
+}
+$("viewSwitch").addEventListener("click",()=>{eggMode=eggMode==="classic"?"split":"classic";active=null;drawEgg()});
+$("egg").addEventListener("click",e=>{const g=e.target.closest(".wedge");if(!g)return;const k=+g.dataset.k;active=active===k?null:k;drawEgg()});
+
 function render(docs){
   const n=docs.length;
   $("countNum").textContent=n;$("countLbl").textContent=n===1?"Ergebnis":"Ergebnisse";$("qrCount").textContent=n;$("qrCountLbl").textContent=n===1?"Ergebnis":"Ergebnisse";
@@ -253,11 +317,12 @@ function render(docs){
   const avg=f=>docs.reduce((s,d)=>s+(+d[f]||0),0)/n;
   const I=avg("I"),W=avg("W"),share=I>0?Math.min(W/I,1):0;
   const Rmax=150,Rw=Rmax*Math.sqrt(Math.max(I,0.03)),Ry=Rw*Math.sqrt(share),cx=190,cy=175;
-  $("egg").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Gruppen-Spiegelei">
-    <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>
-    <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2" style="transition:d .6s"/>
-    ${Ry>0.5?`<circle cx="${cx}" cy="${cy}" r="${Ry.toFixed(1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1.5"/>
-    <ellipse cx="${(cx-Ry*.35).toFixed(1)}" cy="${(cy-Ry*.38).toFixed(1)}" rx="${(Ry*.22).toFixed(1)}" ry="${(Ry*.15).toFixed(1)}" fill="#fff" opacity=".45"/>`:""}</svg>`;
+  // Bereiche fürs Aufschlüsseln: Breite = Summe der Interessen, Gelb = interessengewichteter Einfluss
+  const parts=AREA_NAMES.map((name,k)=>{let sA=0,sAB=0;
+    docs.forEach(d=>{const x=d.areas&&d.areas["a"+k];if(x&&x.i>=2&&x.w>0){const a=(x.i-1)/4,b=(x.w-1)/4;sA+=a;sAB+=a*b}});
+    return {k,name,sA,b:sA>0?sAB/sA:0};}).filter(x=>x.sA>0);
+  EGG={I,share,parts,total:parts.reduce((t,x)=>t+x.sA,0)};
+  drawEgg();
   $("lead").textContent=`Als Gruppe sind ${pct(share)} eures Interessensbereichs gelb.`;
 
   const stats=AREA_NAMES.map((name,k)=>{
