@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Beispiel: Gruppenauswertung – Der Einfluss-Test von Thomas „Döm“ Löwen</title>
+<style>
+@font-face{font-family:"Young Serif";src:url("fonts/young-serif-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Figtree";src:url("fonts/figtree-latin-700-normal.woff2") format("woff2");font-weight:700;font-display:swap}
+:root{
+  --bg:#131E3D; --plate:#1B2950; --plate-2:#22325E; --rim:#F5B21B; --ink:#EEF2FA; --muted:#A8B4CE;
+  --white:#F8FAFD; --white-edge:#C9D3E3; --yolk:#F5B21B; --yolk-deep:#D98C0A;
+  --line:#2D3D6A; --focus:#F5B21B; --ok:#7FD3A8; --on-yolk:#131E3D;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:18px;line-height:1.5}
+h1,h2,h3{font-family:"Young Serif",Georgia,serif;font-weight:400;line-height:1.15;margin:0}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+[hidden]{display:none!important}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px 64px}
+.btn{border:0;border-radius:999px;padding:14px 30px;background:var(--rim);color:var(--on-yolk);font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid #3C4E80;padding:12px 22px}
+.muted{color:var(--muted)}
+.setup{max-width:520px;margin:8vh auto 0;text-align:center}
+.setup h1{font-size:clamp(2rem,5vw,2.8rem);margin-bottom:12px}
+.setup p{color:var(--muted)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.row input{width:150px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--plate);font-size:1.3rem;letter-spacing:.3em;text-align:center}
+.status{color:var(--muted);margin-top:14px;min-height:1.5em}
+.pinbar{display:grid;grid-template-columns:auto 1fr auto;gap:28px;align-items:center;background:var(--plate);border-radius:22px;padding:22px 28px;margin-bottom:36px}
+@media (max-width:760px){.pinbar{grid-template-columns:1fr;text-align:center}}
+.pin small,.join small{display:block;color:var(--muted);font-size:.95rem}
+.pin b{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:clamp(3.5rem,10vw,6rem);letter-spacing:.12em;line-height:1}
+.join b{font-size:clamp(1.1rem,2.4vw,1.5rem);font-weight:600;overflow-wrap:anywhere}
+.count{text-align:center}
+.count b{display:block;font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.count span{color:var(--muted);font-size:.95rem}
+.waiting{text-align:center;padding:6vh 0}
+.waiting h2{font-size:clamp(1.6rem,4vw,2.3rem);margin-bottom:10px}
+.result{display:grid;grid-template-columns:minmax(280px,1fr) 1.2fr;gap:40px;align-items:start}
+@media (max-width:860px){.result{grid-template-columns:1fr}}
+.egg svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.legend{display:flex;justify-content:center;gap:22px;color:var(--muted);font-size:.95rem;margin-top:6px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:14px;height:14px;border-radius:50%}
+.legend .kw{background:var(--white);border:2px solid var(--white-edge)}
+.legend .ky{background:var(--yolk);border:2px solid var(--yolk-deep)}
+.lead{font-family:"Young Serif",Georgia,serif;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.3;margin:0 0 24px}
+.hl{background:var(--plate);border-radius:18px;padding:18px 20px;margin-bottom:14px}
+.hl small{color:var(--muted)}
+.hl h3{font-size:1.35rem;margin:4px 0}
+.hl p{margin:0;color:var(--muted);font-size:.95rem}
+.gaps{display:grid;gap:8px;margin-top:8px}
+.gaps div{display:flex;justify-content:space-between;gap:12px}
+.gaps span{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+details{margin-top:36px}
+summary{cursor:pointer;font-weight:600}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.98rem}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:600;font-size:.88rem}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:40px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Brand */
+.demo-note{display:inline-block;margin:0 0 14px;padding:5px 14px;border-radius:999px;border:1.5px dashed var(--yolk);color:var(--yolk);font-size:.9rem}
+body{overflow-x:clip}
+input{max-width:100%;min-width:0}
+.brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
+.wordmark{font-family:"Young Serif",Georgia,serif;font-size:1.05rem;color:var(--ink);text-decoration:none;letter-spacing:.01em}
+.wordmark:hover{color:var(--yolk)}
+.brandbar a.site{color:var(--muted);font-size:.9rem;text-decoration:none}
+.brandbar a.site:hover{color:var(--ink)}
+.byline{color:var(--muted);font-size:.98rem;margin:-4px 0 18px}
+.byline a{color:var(--ink);text-decoration-color:var(--yolk);text-underline-offset:3px}
+.site-foot{border-top:1px solid var(--line);margin-top:56px;padding-top:22px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;font-size:.88rem;color:var(--muted)}
+.site-foot nav{display:flex;gap:20px;flex-wrap:wrap}
+.site-foot a{color:var(--muted);text-decoration:none}
+.site-foot a:hover{color:var(--ink);text-decoration:underline}
+.more-from{text-align:center;margin:0 0 32px;color:var(--muted);font-size:.98rem}
+.more-from a{color:var(--ink);text-decoration-color:var(--yolk);text-underline-offset:3px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="brandbar">
+    <a class="wordmark" href="https://thomasloewen.de" target="_blank" rel="noopener">Thomas „Döm“ Löwen</a>
+    <a class="site" href="https://thomasloewen.de" target="_blank" rel="noopener">thomasloewen.de</a>
+  </header>
+
+  <div id="setup" class="setup" hidden>
+    <h1>Gruppenleitung</h1>
+    <p>Starte eine Gruppe. Die Teilnehmenden geben die PIN nach ihrem Ergebnis ein, und hier erscheint die anonyme Gruppenauswertung.</p>
+    <div class="row"><button class="btn" id="newBtn">Neue Gruppe starten</button></div>
+    <p class="muted" style="margin-top:28px">Gruppe schon gestartet?</p>
+    <div class="row">
+      <input id="openInput" inputmode="numeric" maxlength="4" size="4" placeholder="PIN" aria-label="Bestehende PIN">
+      <button class="btn btn-ghost" id="openBtn">Öffnen</button>
+    </div>
+    <p class="status" id="setupStatus"></p>
+  </div>
+
+  <div id="session" hidden>
+    <p class="demo-note">Beispielansicht mit erfundenen Daten von 12 Teilnehmern</p>
+    <div class="pinbar">
+      <div class="pin"><small>Gruppen-PIN</small><b id="pinShow"></b></div>
+      <div class="join"><small>Zum Test</small><b id="testUrl"></b><small style="margin-top:6px">Nach dem Ergebnis die PIN eingeben und „Anonym senden“ tippen.</small></div>
+      <div class="count"><b id="countNum">0</b><span id="countLbl">Ergebnisse</span></div>
+    </div>
+
+    <div id="waiting" class="waiting">
+      <h2>Warten auf Ergebnisse …</h2>
+      <p class="muted" id="waitTxt">Die Auswertung erscheint ab drei Ergebnissen, damit niemand erkennbar ist.</p>
+    </div>
+
+    <div id="resultBox" hidden>
+      <div class="result">
+        <div class="egg">
+          <div id="egg"></div>
+          <div class="legend"><span><i class="kw"></i>Interesse</span><span><i class="ky"></i>Einfluss</span></div>
+        </div>
+        <div>
+          <p class="lead" id="lead"></p>
+          <div class="hl"><small>Hier bewegt ihr am meisten</small><h3 id="strong"></h3><p id="strongT"></p></div>
+          <div class="hl"><small>Hier steckt ungenutztes Potenzial</small><div class="gaps" id="gaps"></div></div>
+        </div>
+      </div>
+      <details>
+        <summary>Alle Bereiche</summary>
+        <p class="muted" style="margin:10px 0 0;font-size:.95rem">Durchschnitt unter denen, für die der Bereich mindestens „wenig“ Raum einnimmt. Skala 1 bis 5.</p>
+        <div class="tw"><table><thead><tr><th>Bereich</th><th class="num">Personen</th><th class="num">Interesse</th><th class="num">Einfluss</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      </details>
+    </div>
+
+    <div class="foot">
+      <button class="btn btn-ghost" id="fsBtn">Vollbild</button>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <span>© <span class="year"></span> Thomas „Döm“ Löwen</span>
+    <nav aria-label="Rechtliches">
+      <a href="https://thomasloewen.de" target="_blank" rel="noopener">thomasloewen.de</a>
+      <a href="https://angebote.thomasloewen.de/legal/271582326/contact" target="_blank" rel="noopener">Impressum</a>
+      <a href="https://angebote.thomasloewen.de/legal/271582326/privacy" target="_blank" rel="noopener">Datenschutz</a>
+    </nav>
+  </footer>
+</main>
+<script>document.querySelectorAll(".year").forEach(e=>e.textContent=new Date().getFullYear())</script>
+<script type="module">
+const AREA_NAMES=["Familie & Freundschaften","Beruf & Karriere","Wirtschaft & Unternehmertum","Politik & Gesellschaft","Sport & Freizeit","Kultur & Medien","Glaube & Kirche","Ehrenamt & Engagement","Vereine & lokale Gemeinschaft","Bildung & Wissen","Internet & Social Media"];
+// Beispieldaten: 12 Teilnehmer
+const PROFILE=[[5,4],[4,3],[3,2],[3,1],[4,2],[3,1],[5,3],[3,3],[2,2],[3,2],[3,1]];
+let sd=3;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+const DOCS=[];for(let p=0;p<12;p++){const areas={};let sA=0,sM=0,cnt=0;
+  PROFILE.forEach(([mi,mw],k)=>{let i=Math.max(1,Math.min(5,Math.round(mi+(rnd()-0.5)*2.2)));let w=i>=2?Math.max(1,Math.min(5,Math.round(mw+(rnd()-0.5)*2.2))):0;
+    areas["a"+k]={i,w};if(i>=2){const a=(i-1)/4,b=(w-1)/4;sA+=a;sM+=a*b;cnt++}});
+  const I=sA/cnt,share=sM/sA;DOCS.push({I,W:I*share,share,areas})}
+const connect=async()=>({db:{},fs:{doc:()=>({}),collection:()=>({}),serverTimestamp:()=>0,
+  getDoc:async()=>({exists:()=>true}),setDoc:async()=>{},
+  onSnapshot:(ref,cb)=>{cb({docs:DOCS.map(d=>({data:()=>d}))});return()=>{}}}});
+const $=id=>document.getElementById(id);
+const LKEY="wirkungsbereich-leitung-pin";
+const pct=v=>Math.round(v*100)+" %";
+const f1=v=>v.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function blob(cx,cy,r,seed,amp=0.1){
+  const pts=[],n=10;let s=seed;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280};
+  for(let k=0;k<n;k++){const a=k/n*Math.PI*2,rr=r*(1+rnd()*amp);pts.push([cx+Math.cos(a)*rr*1.06,cy+Math.sin(a)*rr])}
+  let d="";
+  for(let k=0;k<n;k++){
+    const p0=pts[(k-1+n)%n],p1=pts[k],p2=pts[(k+1)%n],p3=pts[(k+2)%n];
+    if(k===0)d+=`M${p1[0].toFixed(1)},${p1[1].toFixed(1)}`;
+    const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d+"Z";
+}
+
+const testUrl="https://einfluss.thomasloewen.de/".replace(/^https?:\/\//,"").replace(/\/$/,"");
+$("testUrl").textContent=testUrl;
+
+let G=null,unsub=null;
+async function db(){
+  if(G)return G;
+  G=await connect().catch(()=>false);
+  if(!G){$("setupStatus").textContent="Firebase ist noch nicht eingerichtet. Trag die Zugangsdaten in gruppe.js ein (siehe README).";
+    $("newBtn").disabled=true;$("openBtn").disabled=true}
+  return G;
+}
+
+async function newGroup(){
+  const g=await db();if(!g)return;const {db:d,fs}=g;
+  $("newBtn").disabled=true;$("setupStatus").textContent="Gruppe wird angelegt …";
+  for(let t=0;t<8;t++){
+    const pin=String(1000+Math.floor(Math.random()*9000));
+    try{await fs.setDoc(fs.doc(d,"sessions",pin),{created:fs.serverTimestamp()});openSession(pin);$("newBtn").disabled=false;return}
+    catch(e){/* PIN schon vergeben, nächster Versuch */}
+  }
+  $("newBtn").disabled=false;$("setupStatus").textContent="Das hat nicht geklappt. Prüf die Verbindung und die Firestore-Regeln.";
+}
+async function openExisting(){
+  const pin=$("openInput").value.replace(/\D/g,"");
+  if(pin.length!==4){$("setupStatus").textContent="Bitte eine vierstellige PIN eingeben.";return}
+  const g=await db();if(!g)return;const {db:d,fs}=g;
+  try{const s=await fs.getDoc(fs.doc(d,"sessions",pin));
+    if(!s.exists()){$("setupStatus").textContent="Diese PIN gibt es nicht.";return}
+    openSession(pin)}catch(e){$("setupStatus").textContent="Die Verbindung hat nicht geklappt."}
+}
+function openSession(pin){
+  $("setup").hidden=true;$("session").hidden=false;$("pinShow").textContent=pin;
+  const {db:d,fs}=G;
+  if(unsub)unsub();
+  unsub=fs.onSnapshot(fs.collection(d,"sessions",pin,"results"),snap=>render(snap.docs.map(x=>x.data())),
+    ()=>{$("waitTxt").textContent="Die Verbindung ist unterbrochen. Lade die Seite neu."});
+}
+
+function render(docs){
+  const n=docs.length;
+  $("countNum").textContent=n;$("countLbl").textContent=n===1?"Ergebnis":"Ergebnisse";
+  if(n<3){$("waiting").hidden=false;$("resultBox").hidden=true;
+    $("waitTxt").textContent=`Die Auswertung erscheint ab drei Ergebnissen, damit niemand erkennbar ist. Bisher: ${n}.`;return}
+  $("waiting").hidden=true;$("resultBox").hidden=false;
+
+  const avg=f=>docs.reduce((s,d)=>s+(+d[f]||0),0)/n;
+  const I=avg("I"),W=avg("W"),share=I>0?Math.min(W/I,1):0;
+  const Rmax=150,Rw=Rmax*Math.sqrt(Math.max(I,0.03)),Ry=Rw*Math.sqrt(share),cx=190,cy=175;
+  $("egg").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Gruppen-Spiegelei">
+    <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>
+    <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2" style="transition:d .6s"/>
+    ${Ry>0.5?`<circle cx="${cx}" cy="${cy}" r="${Ry.toFixed(1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1.5"/>
+    <ellipse cx="${(cx-Ry*.35).toFixed(1)}" cy="${(cy-Ry*.38).toFixed(1)}" rx="${(Ry*.22).toFixed(1)}" ry="${(Ry*.15).toFixed(1)}" fill="#fff" opacity=".45"/>`:""}</svg>`;
+  $("lead").textContent=`Als Gruppe sind ${pct(share)} eures Interessensbereichs gelb.`;
+
+  const stats=AREA_NAMES.map((name,k)=>{
+    const v=docs.map(d=>d.areas&&d.areas["a"+k]).filter(x=>x&&x.i>=2&&x.w>0);
+    const ai=v.length?v.reduce((s,x)=>s+x.i,0)/v.length:0,aw=v.length?v.reduce((s,x)=>s+x.w,0)/v.length:0;
+    return {name,n:v.length,ai,aw,gap:ai-aw};
+  });
+  const enough=stats.filter(s=>s.n>=2);
+  const strong=[...enough].sort((a,b)=>b.aw-a.aw||b.n-a.n)[0];
+  $("strong").textContent=strong?strong.name:"–";
+  $("strongT").textContent=strong?`Einfluss ${f1(strong.aw)} von 5, ${strong.n} Personen`:"Noch zu wenige Angaben.";
+  const gaps=enough.filter(s=>s.gap>0).sort((a,b)=>b.gap-a.gap).slice(0,3);
+  $("gaps").innerHTML=gaps.length?gaps.map(g=>`<div><b>${esc(g.name)}</b><span>Interesse ${f1(g.ai)} · Einfluss ${f1(g.aw)}</span></div>`).join("")
+    :'<p>Wo euch etwas beschäftigt, habt ihr auch Einfluss.</p>';
+  $("tbody").innerHTML=stats.sort((a,b)=>b.n-a.n||b.ai-a.ai).map(s=>
+    `<tr><td>${esc(s.name)}</td><td class="num">${s.n}</td><td class="num">${s.n?f1(s.ai):"–"}</td><td class="num">${s.n?f1(s.aw):"–"}</td></tr>`).join("");
+}
+
+$("newBtn").onclick=newGroup;
+$("openBtn").onclick=openExisting;
+$("openInput").addEventListener("keydown",e=>{if(e.key==="Enter")openExisting()});
+if($("leaveBtn"))$("leaveBtn").onclick=()=>{if(unsub)unsub();unsub=null;try{localStorage.removeItem(LKEY)}catch(e){}
+  $("session").hidden=true;$("setup").hidden=false;$("setupStatus").textContent=""};
+$("fsBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+
+(async()=>{
+  const g=await db();if(!g)return;
+  openSession("4827");document.querySelector("details").open=true;
+})();
+</script>
+</body>
+</html>
