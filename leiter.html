@@ -74,6 +74,18 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
 .foot{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:40px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
+/* QR-Code */
+.qr-overlay{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3vh 5vw;padding:calc(env(safe-area-inset-top,0px) + 70px) 4vw calc(env(safe-area-inset-bottom,0px) + 24px);overflow:auto}
+.qr-box{background:#fff;padding:1.5vmin;width:min(78vh,88vw);flex:none}
+.qr-svg{width:100%;height:auto;display:block}
+.qr-info{max-width:34rem}
+.qr-small{color:var(--muted);font-size:clamp(1rem,2.2vw,1.4rem);margin:0}
+.qr-url{font-family:"Young Serif",Georgia,serif;font-size:clamp(1rem,2vw,2.1rem);margin:4px 0 4vh;white-space:nowrap}
+.qr-pin{font-family:"Young Serif",Georgia,serif;font-size:clamp(4rem,11vw,8rem);letter-spacing:.12em;line-height:1;margin:6px 0 4vh;color:var(--yolk)}
+.qr-count{font-family:"Young Serif",Georgia,serif;font-size:clamp(1.8rem,4vw,3rem);line-height:1;margin:6px 0 0;font-variant-numeric:tabular-nums}
+.qr-close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;padding:10px 18px}
+@media (max-aspect-ratio:1/1){.qr-info{text-align:center}}
+
 /* Brand */
 body{overflow-x:clip}
 input{max-width:100%;min-width:0}
@@ -114,7 +126,7 @@ input{max-width:100%;min-width:0}
   <div id="session" hidden>
     <div class="pinbar">
       <div class="pin"><small>Gruppen-PIN</small><b id="pinShow"></b></div>
-      <div class="join"><small>Zum Test</small><b id="testUrl"></b><small style="margin-top:6px">Nach dem Ergebnis die PIN eingeben und „Anonym senden“ tippen.</small></div>
+      <div class="join"><small>Zum Test</small><b id="testUrl"></b><small style="margin-top:6px">Nach dem Ergebnis „Anonym mit der Gruppe teilen“ tippen und die PIN eingeben.</small><button class="btn qr-open" style="margin-top:12px;padding:10px 18px">QR-Code anzeigen</button></div>
       <div class="count"><b id="countNum">0</b><span id="countLbl">Ergebnisse</span></div>
     </div>
 
@@ -145,6 +157,19 @@ input{max-width:100%;min-width:0}
     <div class="foot">
       <button class="btn btn-ghost" id="fsBtn">Vollbild</button>
       <button class="btn btn-ghost" id="leaveBtn">Andere Gruppe</button>
+    </div>
+  </div>
+
+  <div id="qrOverlay" class="qr-overlay" hidden role="dialog" aria-modal="true" aria-label="QR-Code zum Test">
+    <button class="btn btn-ghost qr-close" id="qrClose">Schließen</button>
+    <div class="qr-box"><svg class="qr-svg" viewBox="0 0 37 37" shape-rendering="crispEdges" role="img" aria-label="QR-Code zu einfluss.thomasloewen.de"><rect width="37" height="37" fill="#fff"/><path d="M4,4h7v1h-7zM18,4h1v1h-1zM23,4h1v1h-1zM26,4h7v1h-7zM4,5h1v1h-1zM10,5h1v1h-1zM12,5h1v1h-1zM16,5h2v1h-2zM23,5h2v1h-2zM26,5h1v1h-1zM32,5h1v1h-1zM4,6h1v1h-1zM6,6h3v1h-3zM10,6h1v1h-1zM13,6h1v1h-1zM16,6h1v1h-1zM19,6h1v1h-1zM24,6h1v1h-1zM26,6h1v1h-1zM28,6h3v1h-3zM32,6h1v1h-1zM4,7h1v1h-1zM6,7h3v1h-3zM10,7h1v1h-1zM14,7h1v1h-1zM17,7h1v1h-1zM20,7h1v1h-1zM22,7h2v1h-2zM26,7h1v1h-1zM28,7h3v1h-3zM32,7h1v1h-1zM4,8h1v1h-1zM6,8h3v1h-3zM10,8h1v1h-1zM12,8h3v1h-3zM17,8h1v1h-1zM20,8h4v1h-4zM26,8h1v1h-1zM28,8h3v1h-3zM32,8h1v1h-1zM4,9h1v1h-1zM10,9h1v1h-1zM13,9h1v1h-1zM16,9h1v1h-1zM18,9h7v1h-7zM26,9h1v1h-1zM32,9h1v1h-1zM4,10h7v1h-7zM12,10h1v1h-1zM14,10h1v1h-1zM16,10h1v1h-1zM18,10h1v1h-1zM20,10h1v1h-1zM22,10h1v1h-1zM24,10h1v1h-1zM26,10h7v1h-7zM14,11h1v1h-1zM19,11h1v1h-1zM21,11h1v1h-1zM23,11h2v1h-2zM4,12h1v1h-1zM6,12h1v1h-1zM8,12h1v1h-1zM10,12h1v1h-1zM14,12h1v1h-1zM16,12h1v1h-1zM20,12h2v1h-2zM23,12h2v1h-2zM28,12h1v1h-1zM31,12h1v1h-1zM4,13h2v1h-2zM12,13h2v1h-2zM17,13h1v1h-1zM19,13h2v1h-2zM24,13h3v1h-3zM29,13h1v1h-1zM32,13h1v1h-1zM4,14h1v1h-1zM6,14h1v1h-1zM8,14h6v1h-6zM16,14h1v1h-1zM18,14h4v1h-4zM25,14h1v1h-1zM30,14h3v1h-3zM4,15h1v1h-1zM6,15h1v1h-1zM11,15h1v1h-1zM13,15h1v1h-1zM15,15h4v1h-4zM20,15h3v1h-3zM24,15h2v1h-2zM31,15h1v1h-1zM7,16h6v1h-6zM14,16h1v1h-1zM16,16h1v1h-1zM18,16h4v1h-4zM23,16h4v1h-4zM29,16h1v1h-1zM31,16h2v1h-2zM4,17h1v1h-1zM7,17h1v1h-1zM11,17h1v1h-1zM13,17h1v1h-1zM16,17h1v1h-1zM18,17h2v1h-2zM21,17h1v1h-1zM24,17h1v1h-1zM26,17h1v1h-1zM29,17h1v1h-1zM32,17h1v1h-1zM4,18h1v1h-1zM6,18h1v1h-1zM8,18h1v1h-1zM10,18h3v1h-3zM14,18h1v1h-1zM17,18h1v1h-1zM24,18h3v1h-3zM29,18h1v1h-1zM31,18h2v1h-2zM6,19h1v1h-1zM9,19h1v1h-1zM14,19h1v1h-1zM20,19h4v1h-4zM28,19h2v1h-2zM31,19h1v1h-1zM5,20h2v1h-2zM8,20h1v1h-1zM10,20h6v1h-6zM19,20h3v1h-3zM23,20h4v1h-4zM29,20h1v1h-1zM31,20h2v1h-2zM6,21h1v1h-1zM9,21h1v1h-1zM12,21h1v1h-1zM14,21h2v1h-2zM17,21h1v1h-1zM21,21h2v1h-2zM24,21h1v1h-1zM26,21h1v1h-1zM29,21h2v1h-2zM32,21h1v1h-1zM4,22h1v1h-1zM9,22h3v1h-3zM13,22h1v1h-1zM15,22h2v1h-2zM18,22h1v1h-1zM21,22h1v1h-1zM24,22h1v1h-1zM26,22h3v1h-3zM31,22h2v1h-2zM5,23h1v1h-1zM7,23h2v1h-2zM11,23h1v1h-1zM13,23h1v1h-1zM17,23h8v1h-8zM26,23h4v1h-4zM31,23h1v1h-1zM4,24h1v1h-1zM6,24h1v1h-1zM8,24h3v1h-3zM13,24h4v1h-4zM18,24h1v1h-1zM20,24h2v1h-2zM24,24h5v1h-5zM12,25h1v1h-1zM15,25h2v1h-2zM18,25h1v1h-1zM20,25h2v1h-2zM24,25h1v1h-1zM28,25h1v1h-1zM30,25h3v1h-3zM4,26h7v1h-7zM13,26h2v1h-2zM17,26h1v1h-1zM20,26h1v1h-1zM23,26h2v1h-2zM26,26h1v1h-1zM28,26h2v1h-2zM31,26h2v1h-2zM4,27h1v1h-1zM10,27h1v1h-1zM14,27h1v1h-1zM19,27h4v1h-4zM24,27h1v1h-1zM28,27h2v1h-2zM4,28h1v1h-1zM6,28h3v1h-3zM10,28h1v1h-1zM12,28h4v1h-4zM20,28h2v1h-2zM24,28h5v1h-5zM32,28h1v1h-1zM4,29h1v1h-1zM6,29h3v1h-3zM10,29h1v1h-1zM14,29h4v1h-4zM20,29h1v1h-1zM23,29h2v1h-2zM27,29h2v1h-2zM30,29h3v1h-3zM4,30h1v1h-1zM6,30h3v1h-3zM10,30h1v1h-1zM12,30h3v1h-3zM17,30h1v1h-1zM20,30h2v1h-2zM23,30h1v1h-1zM25,30h1v1h-1zM27,30h3v1h-3zM32,30h1v1h-1zM4,31h1v1h-1zM10,31h1v1h-1zM13,31h1v1h-1zM16,31h3v1h-3zM20,31h2v1h-2zM23,31h3v1h-3zM31,31h1v1h-1zM4,32h7v1h-7zM12,32h1v1h-1zM14,32h1v1h-1zM16,32h2v1h-2zM19,32h4v1h-4zM24,32h2v1h-2zM27,32h2v1h-2zM31,32h2v1h-2z" fill="#131E3D"/></svg></div>
+    <div class="qr-info">
+      <p class="qr-small">Mit der Handykamera scannen</p>
+      <p class="qr-url">einfluss.thomasloewen.de</p>
+      <p class="qr-small">Gruppen-PIN</p>
+      <p class="qr-pin" id="qrPin"></p>
+      <p class="qr-small">Bisher eingegangen</p>
+      <p class="qr-count"><span id="qrCount">0</span> <span id="qrCountLbl" class="qr-small" style="display:inline">Ergebnisse</span></p>
     </div>
   </div>
 
@@ -220,7 +245,7 @@ function openSession(pin){
 
 function render(docs){
   const n=docs.length;
-  $("countNum").textContent=n;$("countLbl").textContent=n===1?"Ergebnis":"Ergebnisse";
+  $("countNum").textContent=n;$("countLbl").textContent=n===1?"Ergebnis":"Ergebnisse";$("qrCount").textContent=n;$("qrCountLbl").textContent=n===1?"Ergebnis":"Ergebnisse";
   if(n<3){$("waiting").hidden=false;$("resultBox").hidden=true;
     $("waitTxt").textContent=`Die Auswertung erscheint ab drei Ergebnissen, damit niemand erkennbar ist. Bisher: ${n}.`;return}
   $("waiting").hidden=true;$("resultBox").hidden=false;
@@ -256,6 +281,9 @@ $("openBtn").onclick=openExisting;
 $("openInput").addEventListener("keydown",e=>{if(e.key==="Enter")openExisting()});
 $("leaveBtn").onclick=()=>{if(unsub)unsub();unsub=null;try{localStorage.removeItem(LKEY)}catch(e){}
   $("session").hidden=true;$("setup").hidden=false;$("setupStatus").textContent=""};
+document.querySelectorAll(".qr-open").forEach(b=>b.onclick=()=>{$("qrPin").textContent=$("pinShow").textContent;$("qrOverlay").hidden=false;$("qrClose").focus()});
+$("qrClose").onclick=()=>{$("qrOverlay").hidden=true};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("qrOverlay").hidden=true});
 $("fsBtn").onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
 
 (async()=>{
