@@ -99,6 +99,13 @@ th{color:var(--muted);font-weight:600;font-size:.88rem}
 .dim .wedge{opacity:.3}
 .dim .wedge.on{opacity:1}
 
+/* Hover-Hervorhebung */
+.gap-row,.hl[data-k]{cursor:pointer;border-radius:10px;transition:background .15s,box-shadow .15s}
+.gap-row{margin:0 -10px;padding:6px 10px}
+.split-on .gap-row:hover,.split-on .gap-row:focus-visible,.split-on .gap-row.hot{background:var(--plate-2);box-shadow:inset 3px 0 0 var(--yolk)}
+.split-on .hl[data-k]:hover{box-shadow:inset 3px 0 0 var(--yolk)}
+.dim .wedge{opacity:.22}
+
 /* Brand */
 body{overflow-x:clip}
 input{max-width:100%;min-width:0}
@@ -262,7 +269,8 @@ function openSession(pin){
     ()=>{$("waitTxt").textContent="Die Verbindung ist unterbrochen. Lade die Seite neu."});
 }
 
-let EGG=null,eggMode="classic",active=null;
+let EGG=null,eggMode="classic",active=null,hoverK=null;
+const focusK=()=>hoverK!==null?hoverK:active;
 function wedge(cx,cy,r,a0,a1){
   if(a1-a0>=Math.PI*2-1e-6)return `M${cx-r},${cy}a${r},${r} 0 1,0 ${2*r},0a${r},${r} 0 1,0 ${-2*r},0Z`;
   const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
@@ -282,14 +290,14 @@ function drawEgg(){
     parts.forEach(x=>{
       const th=total>0?x.sA/total*Math.PI*2:0,a0=ang,a1=ang+th;ang=a1;
       const ry=Rw*Math.sqrt(x.b);
-      ws+=`<g class="wedge${active===x.k?" on":""}" data-k="${x.k}">
+      ws+=`<g class="wedge${focusK()===x.k?" on":""}" data-k="${x.k}">
         <path d="${wedge(cx,cy,Rw*1.25,a0,a1)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="1.5" clip-path="url(#gClip)"/>
         ${ry>0.5?`<path d="${wedge(cx,cy,ry,a0,a1)}" fill="var(--yolk)" stroke="var(--yolk-deep)" stroke-width="1"/>`:""}
         <title>${esc(x.name)}</title></g>`;
     });
     inner=`<defs><clipPath id="gClip"><path d="${blob(cx,cy,Rw,11)}"/></clipPath></defs>
-      <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>
-      <g class="${active!==null?"dim":""}">${ws}</g>`;
+      <path d="${blob(cx,cy,Rw,11)}" fill="${focusK()!==null?"none":"var(--white)"}" stroke="var(--white-edge)" stroke-width="2"/>
+      <g class="${focusK()!==null?"dim":""}" clip-path="url(#gClip)">${ws}</g>`;
   }
   $("egg").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Gruppen-Spiegelei">
     <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
@@ -299,11 +307,20 @@ function setInfo(){
   const sp=eggMode==="split";
   $("viewSwitch").setAttribute("aria-checked",sp?"true":"false");
   $("swLeft").classList.toggle("on-lbl",!sp);$("swRight").classList.toggle("on-lbl",sp);
+  document.body.classList.toggle("split-on",sp);
   $("eggInfo").hidden=!sp;if(!sp)return;
-  const x=EGG&&EGG.parts.find(p=>p.k===active);
+  const x=EGG&&EGG.parts.find(p=>p.k===focusK());
   if(!x){$("eggInfo").textContent="Jeder Keil ist ein Bereich. Je breiter, desto mehr Raum nimmt er in der Gruppe ein, je gelber, desto mehr Einfluss habt ihr dort. Tippe auf einen Keil.";return}
   $("eggInfo").innerHTML=`<b>${esc(x.name)}</b> nimmt ${pct(EGG.total>0?x.sA/EGG.total:0)} eures Eiweißes ein. Euer Einfluss füllt davon ${pct(x.b)} gelb.`;
 }
+function hoverOn(el){if(eggMode!=="split")return;const k=el.dataset.k;if(k===""||k==null)return;hoverK=+k;drawEgg()}
+function hoverOff(){if(hoverK===null)return;hoverK=null;drawEgg()}
+document.addEventListener("mouseover",e=>{const el=e.target.closest(".gap-row,.hl[data-k]");if(el)hoverOn(el)});
+document.addEventListener("mouseout",e=>{const el=e.target.closest(".gap-row,.hl[data-k]");if(el&&!el.contains(e.relatedTarget))hoverOff()});
+document.addEventListener("focusin",e=>{const el=e.target.closest(".gap-row");if(el)hoverOn(el)});
+document.addEventListener("focusout",e=>{if(e.target.closest(".gap-row"))hoverOff()});
+document.addEventListener("click",e=>{const el=e.target.closest(".gap-row,.hl[data-k]");if(!el||el.dataset.k==="")return;
+  if(eggMode!=="split"){eggMode="split"}const k=+el.dataset.k;active=active===k?null:k;hoverK=null;drawEgg()});
 $("viewSwitch").addEventListener("click",()=>{eggMode=eggMode==="classic"?"split":"classic";active=null;drawEgg()});
 $("egg").addEventListener("click",e=>{const g=e.target.closest(".wedge");if(!g)return;const k=+g.dataset.k;active=active===k?null:k;drawEgg()});
 
@@ -328,14 +345,14 @@ function render(docs){
   const stats=AREA_NAMES.map((name,k)=>{
     const v=docs.map(d=>d.areas&&d.areas["a"+k]).filter(x=>x&&x.i>=2&&x.w>0);
     const ai=v.length?v.reduce((s,x)=>s+x.i,0)/v.length:0,aw=v.length?v.reduce((s,x)=>s+x.w,0)/v.length:0;
-    return {name,n:v.length,ai,aw,gap:ai-aw};
+    return {k,name,n:v.length,ai,aw,gap:ai-aw};
   });
   const enough=stats.filter(s=>s.n>=2);
   const strong=[...enough].sort((a,b)=>b.aw-a.aw||b.n-a.n)[0];
-  $("strong").textContent=strong?strong.name:"–";
+  $("strong").textContent=strong?strong.name:"–";$("strong").closest(".hl").dataset.k=strong?strong.k:"";
   $("strongT").textContent=strong?`Einfluss ${f1(strong.aw)} von 5, ${strong.n} Personen`:"Noch zu wenige Angaben.";
   const gaps=enough.filter(s=>s.gap>0).sort((a,b)=>b.gap-a.gap).slice(0,3);
-  $("gaps").innerHTML=gaps.length?gaps.map(g=>`<div><b>${esc(g.name)}</b><span>Interesse ${f1(g.ai)} · Einfluss ${f1(g.aw)}</span></div>`).join("")
+  $("gaps").innerHTML=gaps.length?gaps.map(g=>`<div class="gap-row" data-k="${g.k}" tabindex="0"><b>${esc(g.name)}</b><span>Interesse ${f1(g.ai)} · Einfluss ${f1(g.aw)}</span></div>`).join("")
     :'<p>Wo euch etwas beschäftigt, habt ihr auch Einfluss.</p>';
   $("tbody").innerHTML=stats.sort((a,b)=>b.n-a.n||b.ai-a.ai).map(s=>
     `<tr><td>${esc(s.name)}</td><td class="num">${s.n}</td><td class="num">${s.n?f1(s.ai):"–"}</td><td class="num">${s.n?f1(s.aw):"–"}</td></tr>`).join("");

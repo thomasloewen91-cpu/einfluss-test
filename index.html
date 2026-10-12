@@ -257,6 +257,9 @@ dialog.lead p{color:var(--muted);font-size:.98rem;margin:0 0 12px}
 dialog.lead a.mail{color:var(--ink);font-weight:600;text-decoration-color:var(--yolk);text-underline-offset:3px;overflow-wrap:anywhere}
 dialog.lead .actions{justify-content:flex-start;margin-top:18px}
 
+/* Bereichs-Hervorhebung */
+.dim .wedge{opacity:.22}
+
 /* Brand */
 .ei{color:var(--yolk)}
 .brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
@@ -724,8 +727,8 @@ function drawEgg(animate){
         <title>${esc(r.name)}</title></g>`;
     });
     inner=`<defs><clipPath id="eggClip"><path d="${blob(cx,cy,Rw,11)}"/></clipPath></defs>
-      <path d="${blob(cx,cy,Rw,11)}" fill="var(--white)" stroke="var(--white-edge)" stroke-width="2"/>
-      <g class="${active?"dim":""}">${ws}</g>`;
+      <path d="${blob(cx,cy,Rw,11)}" fill="${active?"none":"var(--white)"}" stroke="var(--white-edge)" stroke-width="2"/>
+      <g class="${active?"dim":""}" clip-path="url(#eggClip)">${ws}</g>`;
   }
   $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} im Einflussbereich">
     <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
