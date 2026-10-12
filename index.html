@@ -663,7 +663,7 @@ function renderResult(isNew){
   drawEgg(true);setInfo();
 
   const {rows,I,W,share}=R;
-  $("lead").textContent=`${pct(share)} deines Interessensbereichs sind gelb.`;
+  $("lead").innerHTML=`Dein Interessensbereich: ${pct(I)}<br>Davon Einfluss: ${pct(share)}`;
   $("more").open=false;
 
   const h=loadHistory(),idx=h.findIndex(x=>x.id===state.runId),prev=idx>0?h[idx-1]:null;
@@ -682,7 +682,7 @@ function renderResult(isNew){
   $("hGap").textContent=gap?gap.name:"Keines";
   $("hGapT").textContent=gap?vals(gap)+" Hier ist der Abstand am größten.":"Wo dich etwas beschäftigt, hast du schon ebenso viel Einfluss.";
 
-  $("moreIntro").textContent=`Interessensbereich ${pct(I)}, Einflussbereich ${pct(W)}. Die gestrichelte Linie im Spiegelei steht für 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
+  $("moreIntro").textContent=`Die gestrichelte Linie im Spiegelei steht für einen Interessensbereich von 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
   const order={core:0,outside:1,foreign:2,edge:3};
   const list=$("fields");list.innerHTML="";
   rows.map(r=>({...r,q:quadrant(r.i,r.w)})).sort((a,b)=>order[a.q]-order[b.q]||b.i-a.i||b.w-a.w).forEach(r=>{
@@ -730,7 +730,7 @@ function drawEgg(animate){
       <path d="${blob(cx,cy,Rw,11)}" fill="${active?"none":"var(--white)"}" stroke="var(--white-edge)" stroke-width="2"/>
       <g class="${active?"dim":""}" clip-path="url(#eggClip)">${ws}</g>`;
   }
-  $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} im Einflussbereich">
+  $("eggStage").innerHTML=`<svg viewBox="0 0 380 350" role="img" aria-label="Spiegelei: Interessensbereich ${pct(I)}, davon ${pct(share)} Einfluss">
     <path d="${blob(cx,cy,Rmax,11)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 7"/>${inner}</svg>`;
 }
 function setInfo(){
@@ -770,7 +770,7 @@ const i=$("pinInput")||$("contribBtn");if(i){i.focus();i.scrollIntoView({behavio
 /* ---------- Image download ---------- */
 async function makePng(){
   try{await document.fonts.ready}catch(e){}
-  const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;
+  const W=1080,H=1440,c=document.createElement("canvas");c.width=W;c.height=H;
   const x=c.getContext("2d");
   x.fillStyle="#131E3D";x.fillRect(0,0,W,H);
   x.fillStyle="#EEF2FA";x.textAlign="center";
@@ -784,12 +784,15 @@ async function makePng(){
   x.restore();
   if(Ry>1){x.beginPath();x.arc(cx,cy,Ry,0,Math.PI*2);x.fillStyle="#F5B21B";x.fill();x.lineWidth=3;x.strokeStyle="#DD8A0A";x.stroke();
     x.beginPath();x.ellipse(cx-Ry*.35,cy-Ry*.38,Ry*.22,Ry*.15,0,0,Math.PI*2);x.fillStyle="rgba(255,255,255,.45)";x.fill()}
-  const stats=[[pct(R.I),"Interessensbereich"],[pct(R.W),"Einflussbereich"],[pct(R.share),"Einflussanteil"]];
-  stats.forEach(([v,l],k)=>{const sx=W/6+k*W/3;x.fillStyle="#EEF2FA";x.font='64px "Young Serif", Georgia, serif';x.fillText(v,sx,1010);
-    x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,sx,1055)});
+  const stats=[[pct(R.I),"Interessensbereich",["Wie stark dich deine","Lebensbereiche beschäftigen"]],
+               [pct(R.share),"davon Einfluss",["Der gelbe Anteil","deines Interessensbereichs"]]];
+  stats.forEach(([v,l,cap],k)=>{const sx=W/4+k*W/2;x.fillStyle="#EEF2FA";x.font='64px "Young Serif", Georgia, serif';x.fillText(v,sx,1010);
+    x.fillStyle="#EEF2FA";x.font='600 28px Figtree, system-ui, sans-serif';x.fillText(l,sx,1055);
+    x.fillStyle="#A8B4CE";x.font='23px Figtree, system-ui, sans-serif';cap.forEach((t,i)=>x.fillText(t,sx,1092+i*30))});
+  x.strokeStyle="#2D3D6A";x.lineWidth=1.5;x.beginPath();x.moveTo(110,1160);x.lineTo(W-110,1160);x.stroke();
   x.textAlign="left";x.font='600 30px Figtree, system-ui, sans-serif';
   const lines=[["Hier bewege ich am meisten",$("hStrong").textContent],["Hier steckt ungenutztes Potenzial",$("hGap").textContent]];
-  lines.forEach(([l,v],k)=>{const y=1150+k*80;x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,110,y);
+  lines.forEach(([l,v],k)=>{const y=1215+k*80;x.fillStyle="#A8B4CE";x.font='28px Figtree, system-ui, sans-serif';x.fillText(l,110,y);
     x.fillStyle="#EEF2FA";x.font='600 34px Figtree, system-ui, sans-serif';x.fillText(v.length>34?v.slice(0,33)+"…":v,110,y+40)});
   x.textAlign="center";x.fillStyle="#F5B21B";x.font='600 28px Figtree, system-ui, sans-serif';x.fillText("thomasloewen.de",W/2,H-50);
   return await new Promise(res=>c.toBlob(res,"image/png"));

@@ -350,7 +350,7 @@ function render(docs){
     return {k,name,sA,b:sA>0?sAB/sA:0};}).filter(x=>x.sA>0);
   EGG={I,share,parts,total:parts.reduce((t,x)=>t+x.sA,0)};
   drawEgg();
-  $("lead").textContent=`Als Gruppe sind ${pct(share)} eures Interessensbereichs gelb.`;
+  $("lead").innerHTML=`Euer Interessensbereich: ${pct(I)}<br>Davon Einfluss: ${pct(share)}`;
 
   const stats=AREA_NAMES.map((name,k)=>{
     const v=docs.map(d=>d.areas&&d.areas["a"+k]).filter(x=>x&&x.i>=2&&x.w>0);
