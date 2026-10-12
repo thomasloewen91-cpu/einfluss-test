@@ -247,6 +247,16 @@ input,textarea,select{max-width:100%;min-width:0}
 .pin-row .btn{flex:1 1 auto;min-width:0;padding:14px 16px;white-space:nowrap}
 @media (max-width:360px){.pin-row{flex-direction:column}.pin-row input{flex:none;width:100%}}
 
+/* Gruppen-Box & Leiter-Dialog */
+.group-box{text-align:center}
+.group-box .pin-row{margin:0 auto;justify-content:center}
+dialog.lead{font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;line-height:1.55;font-size:17px;background:var(--plate);color:var(--ink);border:0;border-radius:22px;padding:26px 24px 22px;max-width:min(540px,calc(100vw - 32px));width:100%;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+dialog.lead::backdrop{background:rgba(8,12,28,.72)}
+dialog.lead h2{font-family:"Young Serif",Georgia,serif;font-size:1.5rem;margin-bottom:12px}
+dialog.lead p{color:var(--muted);font-size:.98rem;margin:0 0 12px}
+dialog.lead a.mail{color:var(--ink);font-weight:600;text-decoration-color:var(--yolk);text-underline-offset:3px;overflow-wrap:anywhere}
+dialog.lead .actions{justify-content:flex-start;margin-top:18px}
+
 /* Brand */
 .ei{color:var(--yolk)}
 .brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
@@ -369,14 +379,25 @@ input,textarea,select{max-width:100%;min-width:0}
     <p class="status" id="dlStatus" style="text-align:center"></p>
     <section id="groupSection" hidden style="margin:22px 0 0">
       <div class="group-box">
-        <p>Gib die PIN ein, die die Gruppenleitung zeigt. Dein Ergebnis wird anonym übertragen, ohne Namen und ohne Notizen.</p>
+        <p>Gib die PIN ein, die die Gruppenleitung zeigt. Übertragen werden nur deine Einschätzungen, ohne Namen und ohne Notizen.</p>
         <div class="pin-row">
           <input id="pinInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" size="4" placeholder="PIN" aria-label="Gruppen-PIN" autocomplete="off" enterkeyhint="send">
           <button class="btn" id="pinBtn">Anonym senden</button>
         </div>
+        <button class="btn btn-ghost" id="leadBtn" style="margin-top:14px;padding:10px 18px">Gruppenleiter-Modus</button>
         <p class="status" id="groupStatus"></p>
       </div>
     </section>
+    <dialog class="lead" id="leadDlg" aria-labelledby="leadTitle">
+      <h2 id="leadTitle">Gruppenleiter-Modus</h2>
+      <p>Mit dem Gruppenleiter-Modus führst du den Einfluss-Test mit deiner eigenen Gruppe durch: Du erhältst eine Gruppen-PIN, die Teilnehmenden senden ihre Ergebnisse anonym, und das gemeinsame Spiegelei erscheint live auf dem Beamer.</p>
+      <p>Wenn du Zugang zum Gruppenleiter-Modus erhalten möchtest oder Thomas „Döm“ Löwen als Referenten für deine Gruppe, Gemeinde oder Veranstaltung einladen willst, schreibe eine Nachricht an <a class="mail" href="mailto:thomas.doem.loewen@gmail.com?subject=Einfluss-Test%20%E2%80%93%20Gruppenleiter-Modus">thomas.doem.loewen@gmail.com</a>.</p>
+      <div class="actions">
+        <a class="btn" href="mailto:thomas.doem.loewen@gmail.com?subject=Einfluss-Test%20%E2%80%93%20Gruppenleiter-Modus" style="text-decoration:none">E-Mail schreiben</a>
+        <a class="btn btn-ghost" href="https://einfluss.thomasloewen.de/beispiel" target="_blank" rel="noopener" style="text-decoration:none">Beispiel ansehen</a>
+        <button class="btn btn-ghost" id="leadClose">Schließen</button>
+      </div>
+    </dialog>
   </div>
 
 
@@ -813,6 +834,10 @@ async function sendPin(){
   finally{$("pinBtn").disabled=false}
 }
 $("pinBtn").onclick=sendPin;
+{const dlg=$("leadDlg");
+ $("leadBtn").onclick=()=>{if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","")};
+ $("leadClose").onclick=()=>dlg.close?dlg.close():dlg.removeAttribute("open");
+ dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});}
 $("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendPin()});
 
 /* ---------- Boot ---------- */
