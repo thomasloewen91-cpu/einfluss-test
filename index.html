@@ -260,6 +260,34 @@ dialog.lead .actions{justify-content:flex-start;margin-top:18px}
 /* Bereichs-Hervorhebung */
 .dim .wedge{opacity:.22}
 
+/* Nächster Schritt & Tipps */
+.next{background:var(--plate);border-radius:18px;padding:22px 22px 18px;margin:0 0 30px}
+.next small{color:var(--yolk);font-weight:600;font-size:.9rem;letter-spacing:.02em}
+.next h3{font-size:1.4rem;margin:6px 0 14px}
+.lvl{color:var(--muted);font-size:.92rem;margin:0 0 12px}
+ul.tips{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+ul.tips li{position:relative;padding-left:30px;line-height:1.45}
+ul.tips li::before{content:"";position:absolute;left:2px;top:.28em;width:16px;height:16px;border-radius:50%;background:var(--yolk);box-shadow:inset 0 0 0 4px var(--plate)}
+.next ul.tips li::before{box-shadow:inset 0 0 0 4px var(--plate)}
+.row-tips{grid-column:1 / -1;display:none;margin-top:10px}
+.field.on .row-tips{display:block}
+.field.on ul.tips li::before{box-shadow:inset 0 0 0 4px var(--plate)}
+.field ul.tips li::before{box-shadow:inset 0 0 0 4px var(--bg)}
+.discover{margin-top:28px}
+.discover h3{font-size:1.25rem;margin:0 0 6px}
+.discover .sub{color:var(--muted);font-size:.95rem;margin:0 0 14px}
+.discover ul.tips li::before{background:var(--white);box-shadow:inset 0 0 0 4px var(--bg)}
+.discover ul.tips b{font-weight:600}
+
+/* Antippbare Karten */
+.hl.tap{cursor:pointer;transition:background .15s,box-shadow .15s}
+.hl.tap:hover{background:var(--plate-2)}
+.hl.tap.on{background:var(--plate-2);box-shadow:inset 0 0 0 2px var(--yolk)}
+.hl.tap small::after{content:" · im Ei zeigen";color:var(--muted);opacity:.7}
+
+.hl-wide{grid-column:1 / -1}
+.hl-more{margin-top:10px!important;font-size:.88rem!important;opacity:.85}
+
 /* Brand */
 .ei{color:var(--yolk)}
 .brandbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 28px}
@@ -354,12 +382,19 @@ dialog.lead .actions{justify-content:flex-start;margin-top:18px}
     <p class="lead-sub" id="compare" hidden></p>
 
     <div class="highlights">
-      <div class="hl"><small>Hier bewegst du am meisten</small><h3 id="hStrong"></h3><p id="hStrongT"></p></div>
-      <div class="hl"><small>Hier steckt ungenutztes Potenzial</small><h3 id="hGap"></h3><p id="hGapT"></p></div>
+      <div class="hl tap" id="hlStrong" role="button" tabindex="0"><small>Hier bewegst du am meisten</small><h3 id="hStrong"></h3><p id="hStrongT"></p></div>
+      <div class="hl tap" id="hlGap" role="button" tabindex="0"><small>Hier steckt ungenutztes Potenzial</small><h3 id="hGap"></h3><p id="hGapT"></p></div>
+      <div class="hl hl-wide" id="hlNew" hidden><small>Hier kannst du mehr Interesse zeigen</small><h3 id="hNew"></h3><p id="hNewT"></p><p class="hl-more" id="hNewMore"></p></div>
     </div>
 
+    <section class="next" id="nextStep">
+      <small>Dein nächster Schritt</small>
+      <h3>Mehr Einfluss in <span id="nsArea"></span></h3>
+      <ul class="tips" id="nsTips"></ul>
+    </section>
+
     <div class="reflect">
-      <label for="r1">Welchen Bereich würdest du gern ins Gelbe holen? Was wäre ein erster kleiner Schritt?</label>
+      <label for="r1">Welchen dieser Schritte gehst du in den nächsten 7 Tagen? Schreib ihn dir auf.</label>
       <textarea id="r1"></textarea>
       <small>Bleibt nur in diesem Browser gespeichert.</small>
     </div>
@@ -368,7 +403,11 @@ dialog.lead .actions{justify-content:flex-start;margin-top:18px}
       <summary>Alle Bereiche ansehen</summary>
       <p class="more-intro" id="moreIntro"></p>
       <ul class="fields" id="fields"></ul>
-      <p class="skipped" id="skipped"></p>
+      <div class="discover" id="discover" hidden>
+        <h3>Neues entdecken</h3>
+        <p class="sub">Diese Bereiche spielen in deinem Leben noch kaum eine Rolle. Ein kleiner Anstoß, um Interesse zu wecken:</p>
+        <ul class="tips" id="discoverList"></ul>
+      </div>
     </details>
 
     <p class="note">Das ist kein objektives Ergebnis, sondern eine Momentaufnahme deiner eigenen Einschätzung. Mach den Test in ein paar Wochen noch einmal und beobachte deine Entwicklung.</p>
@@ -445,15 +484,68 @@ const SCALE_W = [
   ["sehr großer Einfluss","Ich trage hier wesentliche Verantwortung. Vieles richtet sich nach mir."]
 ];
 const TAGS = {
-  core:   {label:"Einflussbereich", text:"Der Bereich prägt dein Leben, und du bewegst dort viel.",
+  core:   {label:"Stärke", text:"Der Bereich prägt dein Leben, und du bewegst dort viel.",
            impulse:"Hier liegt deine Stärke. Investiere bewusst weiter und überlege, wen du mitnehmen oder befähigen kannst."},
-  outside:{label:"Interessensbereich", text:"Der Bereich beschäftigt dich stark, liegt aber außerhalb deines aktuellen Einflusses.",
+  outside:{label:"Potenzial", text:"Der Bereich beschäftigt dich stark, liegt aber außerhalb deines aktuellen Einflusses.",
            impulse:"Gibt es hier eine kleine Rolle, in der du Verantwortung übernehmen könntest? Oder darf der Bereich einfach Freude bleiben, ohne dass du etwas bewegen musst?"},
-  foreign:{label:"Einfluss ohne Fokus", text:"Du prägst hier mehr, als du investierst.",
+  foreign:{label:"Verborgene Stärke", text:"Du prägst hier mehr, als du investierst.",
            impulse:"Andere orientieren sich an dir, obwohl der Bereich für dich nicht zentral ist. Willst du diesen Einfluss bewusster gestalten oder an jemanden abgeben?"},
-  edge:   {label:"Randbereich", text:"Wenig Raum und wenig Einfluss.",
+  edge:   {label:"Wachstumsfeld", text:"Wenig Raum und wenig Einfluss.",
            impulse:"Kein Handlungsbedarf, solange es sich für dich stimmig anfühlt."}
 };
+/* ---------- Tipps für mehr Einfluss ---------- */
+// s = erste Schritte (Einfluss 1–2), g = ausbauen (3), m = multiplizieren (4–5), e = Interesse wecken
+const TIPS={
+ a0:{s:["Plane diese Woche ein Treffen mit einem Freund, bei dem du vor allem zuhörst.","Führe ein festes Familienritual ein, zum Beispiel ein Abendessen ohne Handy.","Frag einen Menschen in deinem Umfeld, wobei du ihm ganz konkret helfen kannst."],
+     g:["Ergreif die Initiative für einen gemeinsamen Ausflug oder ein Projekt.","Sprich in einer schwierigen Situation das an, was andere nicht aussprechen.","Nimm dir regelmäßig Zeit für ein tiefes Gespräch über Werte und Ziele mit Partnerin oder Kindern."],
+     m:["Begleite über ein paar Monate gezielt einen jüngeren Vater oder Freund.","Gib weiter, was in deiner Familie gut funktioniert, etwa in einem Ehe- oder Elternkurs.","Lade bewusst Menschen ein, die sonst wenig Gemeinschaft haben."],
+     e:"Melde dich bei einem Menschen, zu dem der Kontakt eingeschlafen ist."},
+ a1:{s:["Bring in der nächsten Besprechung einen eigenen Verbesserungsvorschlag ein.","Biete einem Kollegen Hilfe bei einer Aufgabe an, die du gut kannst.","Frag deine Führungskraft, wo sie mehr Verantwortung bei dir sieht."],
+     g:["Übernimm ein kleines Projekt mit sichtbarer Verantwortung.","Werde Ansprechpartner für ein Thema, in dem du dich auskennst.","Gib Kollegen ehrliches und wertschätzendes Feedback."],
+     m:["Arbeite gezielt neue Kollegen ein oder werde Mentor.","Präge die Kultur, indem du vorlebst, wie ihr miteinander umgehen wollt.","Teile dein Fachwissen in einem internen Vortrag oder Workshop."],
+     e:"Überleg, welches Problem dich bei der Arbeit am meisten ärgert, und informiere dich, wie andere es lösen."},
+ a2:{s:["Unterstütze bewusst ein lokales Unternehmen und gib ihm konkretes Feedback.","Lies ein Buch über Unternehmertum und sprich mit einem Unternehmer darüber.","Frag bei deinem Arbeitgeber nach Zahlen und Strategie."],
+     g:["Starte ein kleines Nebenprojekt, um selbst unternehmerische Erfahrung zu sammeln.","Engagiere dich in einem Unternehmernetzwerk oder Gründerkreis.","Berate einen Freund bei einer geschäftlichen oder finanziellen Entscheidung."],
+     m:["Begleite junge Gründer als Mentor.","Investiere Zeit oder Geld in Projekte, die anderen Arbeit und Perspektive geben.","Gib dein Wissen über Finanzen in einem Kurs weiter, zum Beispiel in deiner Gemeinde."],
+     e:"Frag einen Unternehmer aus deinem Ort, wie seine Firma entstanden ist."},
+ a3:{s:["Besuche eine öffentliche Sitzung deines Stadt- oder Gemeinderats.","Schreib deinem Abgeordneten zu einem Thema, das dir wichtig ist.","Informiere dich gründlich über ein lokales Thema und sprich mit anderen darüber."],
+     g:["Arbeite in einer Bürgerinitiative, einem Beirat oder einer Partei mit.","Bring ein konkretes Anliegen deines Viertels bei der Stadt ein.","Organisiere ein Gespräch, in dem unterschiedliche Meinungen respektvoll aufeinandertreffen."],
+     m:["Kandidiere für ein Amt oder einen Ausschuss.","Ermutige und begleite andere, sich gesellschaftlich zu engagieren.","Bau Brücken zwischen Gruppen, die sonst nicht miteinander reden."],
+     e:"Lies eine Woche lang die Lokalzeitung und notiere, welches Thema dich am meisten bewegt."},
+ a4:{s:["Lade jemanden ein, regelmäßig mit dir Sport zu machen.","Hilf bei einem Vereinsfest oder Turnier mit.","Nimm jemanden mit zu deinem Hobby, der gerade Anschluss sucht."],
+     g:["Übernimm eine feste Aufgabe in deinem Verein.","Mach eine Übungsleiter- oder Trainerlizenz.","Gründe eine feste Lauf-, Rad- oder Spielgruppe."],
+     m:["Trainiere Kinder oder Jugendliche und sei ihnen Vorbild.","Bilde andere Trainer oder Gruppenleiter aus.","Nutze Sport bewusst, um Menschen zu verbinden, die sonst keinen Anschluss finden."],
+     e:"Probier in diesem Monat einen Sport oder ein Hobby aus, das du noch nie gemacht hast."},
+ a5:{s:["Empfiehl ein Buch, einen Film oder einen Podcast und sprich danach darüber.","Besuche eine kulturelle Veranstaltung und nimm jemanden mit.","Schreib eine ehrliche Rezension zu etwas, das dich bewegt hat."],
+     g:["Gründe einen Lese-, Film- oder Gesprächskreis.","Bring dich mit Musik, Theater oder Gestaltung in Gemeinde oder Verein ein.","Erstelle eigene Inhalte wie Texte, Fotos oder Musik und teile sie."],
+     m:["Fördere junge Talente und gib ihnen eine Bühne.","Organisiere Veranstaltungen, die Kultur und Werte verbinden.","Veröffentliche regelmäßig, etwa einen Blog, Podcast oder eine Kolumne."],
+     e:"Hör dir ein Album, ein Buch oder einen Podcast aus einem Genre an, das du sonst meidest."},
+ a6:{s:["Bete regelmäßig für drei Menschen und frag sie, wie es ihnen geht.","Übernimm einen festen Dienst in deiner Gemeinde.","Erzähl einem Freund, was dir dein Glaube ganz konkret bedeutet."],
+     g:["Leite eine Kleingruppe oder einen Hauskreis.","Begleite einen Menschen, der neu im Glauben ist.","Bereite einen Impuls, eine Andacht oder ein Zeugnis vor."],
+     m:["Bilde andere Kleingruppenleiter aus.","Begleite zwei, drei Männer ein Jahr lang in Jüngerschaft.","Starte etwas Neues, das Menschen außerhalb der Gemeinde erreicht."],
+     e:"Lies eine Woche lang täglich ein Kapitel aus den Evangelien und notiere eine Frage dazu."},
+ a7:{s:["Hilf einmal ganz konkret bei einer Tafel, einem Fest oder einer Aktion mit.","Frag in deinem Umfeld, wo gerade Hilfe gebraucht wird.","Verschenke regelmäßig Zeit, nicht nur Geld."],
+     g:["Übernimm eine feste, verantwortliche Aufgabe in einem Projekt.","Gewinne Freunde oder Kollegen, mit dir mitzumachen.","Verbessere einen Ablauf, der im Projekt nicht gut läuft."],
+     m:["Leite ein Team von Ehrenamtlichen.","Starte ein eigenes Projekt für einen Bedarf, den niemand abdeckt.","Mach das Engagement anderer sichtbar und würdige es öffentlich."],
+     e:"Überleg, was dich in deiner Stadt am meisten bewegt, und finde heraus, wer sich schon dafür einsetzt."},
+ a8:{s:["Stell dich deinen Nachbarn vor oder lade sie auf einen Kaffee ein.","Besuche ein Vereinsfest oder eine Mitgliederversammlung.","Biete deine Fähigkeiten für eine konkrete Aufgabe an."],
+     g:["Lass dich in einen Vorstand oder Ausschuss wählen.","Organisiere ein Nachbarschafts- oder Straßenfest.","Werde Ansprechpartner für Neue in deinem Ort oder Verein."],
+     m:["Übernimm den Vorsitz oder eine leitende Rolle.","Vernetze Vereine, Gemeinde und Stadt für gemeinsame Aktionen.","Bereite gezielt Nachfolger für Ämter vor."],
+     e:"Finde heraus, welche Vereine es in deinem Ort gibt, und schau dir einen davon an."},
+ a9:{s:["Erklär jemandem etwas, das du gut kannst.","Lerne eine neue Fähigkeit und teile, was du dabei herausfindest.","Hilf einem Schüler oder Azubi bei Hausaufgaben oder Bewerbung."],
+     g:["Halte einen kurzen Vortrag oder Workshop zu deinem Fachgebiet.","Werde Lernpate, Nachhilfelehrer oder Mentor.","Schreib eine Anleitung oder Zusammenfassung, die andere nutzen können."],
+     m:["Entwickle einen eigenen Kurs oder eine Seminarreihe.","Bilde andere aus, die dein Wissen weitergeben können.","Veröffentliche dein Wissen dauerhaft, etwa als Artikel, Buch oder Video."],
+     e:"Such dir ein Thema, das dich neugierig macht, und lerne jeden Tag 15 Minuten darüber."},
+ a10:{s:["Teile einmal pro Woche etwas Hilfreiches oder Ermutigendes, statt nur zu konsumieren.","Kommentiere wertschätzend bei Menschen, deren Inhalte dich weiterbringen.","Räum deine Feeds auf, damit du Gutes weitergeben kannst."],
+     g:["Poste regelmäßig zu einem Thema, für das du stehst.","Starte eine Gruppe oder einen Kanal für Menschen mit dem gleichen Anliegen.","Erzähl persönliche Geschichten, nicht nur Meinungen."],
+     m:["Bau ein festes Format auf, etwa einen Podcast, Newsletter oder eine Videoreihe.","Hilf anderen, ihre Botschaft gut online zu teilen.","Nutze deine Reichweite, um andere sichtbar zu machen."],
+     e:"Folge eine Woche lang drei Menschen, die online etwas Gutes bewirken, und schau dir ab, wie sie es machen."}
+};
+const TIPS_CUSTOM={s:["Nimm an einem Treffen, Kurs oder Austausch zu diesem Thema teil.","Teile deine Begeisterung mit jemandem, der neu darin ist.","Biete deine Hilfe bei einer konkreten Aufgabe an."],
+  g:["Übernimm eine feste Aufgabe oder Rolle in diesem Bereich.","Organisiere selbst ein Treffen oder Projekt.","Werde Ansprechpartner für Neue."],
+  m:["Begleite andere als Mentor.","Starte ein eigenes Format oder Angebot.","Gib Verantwortung bewusst weiter und befähige andere."]};
+const levelOf=w=>w<=2?"s":w===3?"g":"m";
+const tipsFor=r=>(TIPS[r.key]||TIPS_CUSTOM)[levelOf(r.w)];
 const KEY="wirkungsbereich-test-v3", HKEY="wirkungsbereich-history-v1", MAX_CUSTOM=3;
 
 /* ---------- State ---------- */
@@ -677,12 +769,15 @@ function renderResult(isNew){
 
   const vals=r=>`Interesse ${r.i} von 5, Einfluss ${r.w} von 5.`;
   const strong=[...rows].sort((a,b)=>b.w-a.w||b.i-a.i)[0];
-  $("hStrong").textContent=strong.name;$("hStrongT").textContent=vals(strong);
+  $("hStrong").textContent=strong.name;$("hlStrong").dataset.key=strong.key;$("hStrongT").textContent=vals(strong);
   const gap=rows.filter(r=>r.i>=3&&r.i>r.w).sort((a,b)=>(b.i-b.w)-(a.i-a.w)||b.i-a.i)[0];
-  $("hGap").textContent=gap?gap.name:"Keines";
+  $("hGap").textContent=gap?gap.name:"Keines";$("hlGap").dataset.key=gap?gap.key:"";$("hlGap").classList.toggle("tap",!!gap);
   $("hGapT").textContent=gap?vals(gap)+" Hier ist der Abstand am größten.":"Wo dich etwas beschäftigt, hast du schon ebenso viel Einfluss.";
+  const focus=gap||[...rows].filter(r=>r.w<5).sort((a,b)=>b.i-a.i||a.w-b.w)[0]||strong;
+  $("nsArea").textContent=focus.name;
+  $("nsTips").innerHTML="";tipsFor(focus).forEach(t=>{const li=document.createElement("li");li.textContent=t;$("nsTips").appendChild(li)});
 
-  $("moreIntro").textContent=`Die gestrichelte Linie im Spiegelei steht für einen Interessensbereich von 100 %. Tippe auf einen Bereich, um ihn im Spiegelei zu sehen.`;
+  $("moreIntro").textContent=`Tippe auf einen Bereich, um ihn im Spiegelei zu sehen und konkrete Schritte für mehr Einfluss zu bekommen. Die gestrichelte Linie steht für einen Interessensbereich von 100 %.`;
   const order={core:0,outside:1,foreign:2,edge:3};
   const list=$("fields");list.innerHTML="";
   rows.map(r=>({...r,q:quadrant(r.i,r.w)})).sort((a,b)=>order[a.q]-order[b.q]||b.i-a.i||b.w-a.w).forEach(r=>{
@@ -690,12 +785,21 @@ function renderResult(isNew){
     li.innerHTML=`<span class="name"></span><span class="tag ${r.q}">${TAGS[r.q].label}</span>
       <div class="bars"><span>Interesse</span><div class="bar i"><i style="width:${r.i/5*100}%"></i></div><output>${r.i}</output>
       <span>Einfluss</span><div class="bar w"><i style="width:${r.w/5*100}%"></i></div><output>${r.w}</output></div>
-      <p class="imp"></p>`;
+      <div class="row-tips"><ul class="tips"></ul></div>`;
     li.querySelector(".name").textContent=r.name;
-    li.querySelector(".imp").textContent=TAGS[r.q].impulse;
+    const ul=li.querySelector(".row-tips ul");tipsFor(r).forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x)});
     list.appendChild(li);
   });
-  $("skipped").textContent=R.skipped.length?`Nicht berücksichtigt: ${R.skipped.join(", ")}.`:"";
+  const skippedAreas=allAreas().filter(a=>(state.interest[a.key]||0)<2&&TIPS[a.key]);
+  $("hlNew").hidden=!skippedAreas.length;
+  if(skippedAreas.length){
+    const first=skippedAreas[0],rest=skippedAreas.slice(1).map(a=>a.name);
+    $("hNew").textContent=first.name;$("hNewT").textContent=TIPS[first.key].e;
+    $("hNewMore").textContent=rest.length?`Auch noch kaum in deinem Leben: ${rest.join(", ")}. Anstöße dazu findest du unter „Alle Bereiche ansehen“.`:"";
+    $("hNewMore").hidden=!rest.length;
+  }
+  $("discover").hidden=!skippedAreas.length;$("discoverList").innerHTML="";
+  skippedAreas.forEach(a=>{const li=document.createElement("li");li.innerHTML=`<b></b> `;li.querySelector("b").textContent=a.name+":";li.append(TIPS[a.key].e);$("discoverList").appendChild(li)});
 
   $("r1").value=state.notes.r1||"";
   refreshGroupUI();
@@ -748,17 +852,23 @@ function setActive(key){
   active=(active===key)?null:key;
   if(eggMode!=="split")setMode("split");else drawEgg(false);
   document.querySelectorAll(".field").forEach(li=>li.classList.toggle("on",li.dataset.key===active));
+  document.querySelectorAll(".hl.tap").forEach(h=>h.classList.toggle("on",!!active&&h.dataset.key===active));
   setInfo();
 }
 function setMode(m){
   eggMode=m;
-  if(m==="classic"){active=null;document.querySelectorAll(".field").forEach(li=>li.classList.remove("on"))}
+  if(m==="classic"){active=null;document.querySelectorAll(".field,.hl.tap").forEach(li=>li.classList.remove("on"))}
   drawEgg(false);setInfo();
 }
 $("more").addEventListener("toggle",()=>{if(!R)return;setMode($("more").open?"split":"classic")});
 $("eggStage").addEventListener("click",e=>{const g=e.target.closest(".wedge");if(g)setActive(g.dataset.key)});
 $("viewSwitch").addEventListener("click",()=>{if(R)setMode(eggMode==="classic"?"split":"classic")});
-$("fields").addEventListener("click",e=>{const li=e.target.closest(".field");if(li){setActive(li.dataset.key);$("eggStage").scrollIntoView({behavior:"smooth",block:"center"})}});
+$("fields").addEventListener("click",e=>{const li=e.target.closest(".field");if(li&&!e.target.closest(".row-tips")){setActive(li.dataset.key)}});
+function cardTap(el){const k=el.dataset.key;if(!k)return;
+  setActive(k);
+  const r=$("eggStage").getBoundingClientRect();if(r.bottom<60||r.top>innerHeight-60)$("eggStage").scrollIntoView({behavior:"smooth",block:"center"});
+  document.querySelectorAll(".hl.tap").forEach(h=>h.classList.toggle("on",h.dataset.key===active));}
+["hlStrong","hlGap"].forEach(id=>{const el=$(id);el.addEventListener("click",()=>cardTap(el));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();cardTap(el)}})});
 $("fields").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const li=e.target.closest(".field");if(li){e.preventDefault();setActive(li.dataset.key)}}});
 
 $("restartBtn").onclick=()=>startNew();
